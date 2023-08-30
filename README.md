@@ -1,2 +1,2 @@
 # Potato
-### Credits to zhogrog for the name
+### Credits to zhogrog for christening this
