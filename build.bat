@@ -18,7 +18,6 @@ set "tabchar=    "
     echo } >> "%main_file%"
 
 :CreateCompile
-    echo creating compile
     echo echo Compiling...; > %compile_file%
     echo g++ '%project_name%.cpp' -Llib -Wall -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o 'main'; >> %compile_file%
     echo if ($?) {echo Running...; .\\'main'} >> %compile_file%
