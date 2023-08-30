@@ -8,12 +8,14 @@ class Engine{
         const int Width = 800;
         const int Height = 600;
         void Close();
+        void MainLoop();
 
     public: 
         SDL_Window* Window;
         SDL_Renderer* Renderer;
-
-        uint32_t TextSpeed = 30;
+        Uint32 TextSpeed = 30;
+        Uint32 FrameStart;
+        int FrameTime, FPS = 100;
         void Run();
     
     Engine(std::string Name): Name(Name){
@@ -33,14 +35,30 @@ void Engine::Run(){
 
     SDL_Event event;
     while (1){
+        FrameStart = SDL_GetTicks();
         while (SDL_PollEvent(&event)){
             if (event.type==SDL_QUIT) return this->Close();
         }
+
+        MainLoop();
     }
 }
 
+
 void Engine::Close(){
-    SDL_DestroyRenderer(this->Renderer);
-    SDL_DestroyWindow(this->Window);
+    SDL_DestroyRenderer(Renderer);
+    SDL_DestroyWindow(Window);
     SDL_Quit();
+}
+
+
+void Engine::MainLoop(){
+    SDL_SetRenderDrawColor(Renderer, 0,0,0,255);
+    SDL_RenderClear(Renderer);
+
+    SDL_RenderPresent(Renderer);
+
+    FrameTime = SDL_GetTicks()-FrameStart;
+    if (FPS>FrameTime)
+        SDL_Delay(FPS-FrameTime);
 }
