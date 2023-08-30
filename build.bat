@@ -11,16 +11,17 @@ set "tabchar=    "
 
 :CreateMain
     echo #include "Potato.hpp" > "%main_file%"
-    echo:
+    echo: >> "%main_file%"
     echo int main(){ >> "%main_file%"
-    echo %tabchar%Engine engine("%project_name%"); >> "%main_file%"
+    echo %tabchar%Potato::Engine engine("%project_name%"); >> "%main_file%"
+    echo %tabchar%engine.Run(); >> "%main_file%"
     echo %tabchar%return 0; >> "%main_file%"
     echo } >> "%main_file%"
 
 :CreateCompile
     echo echo Compiling...; > %compile_file%
-    echo g++ '%project_name%.cpp' -Llib -Wall -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o 'main'; >> %compile_file%
-    echo if ($?) {echo Running...; .\\'main'} >> %compile_file%
+    echo g++ '%project_name%.cpp' -Llib -Wall -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o '%project_name%'; >> %compile_file%
+    echo if ($?) {echo Running...; .\\'%project_name%'} >> %compile_file%
     exit
 
 call :CreateMain
