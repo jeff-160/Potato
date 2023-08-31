@@ -3,9 +3,6 @@ namespace Potato{
         private:
             std::string Name;
             
-            const int Width = 900;
-            const int Height = 600;
-
             Uint32 FrameStart;
             int FrameTime, FPS = 100;
 
@@ -15,15 +12,22 @@ namespace Potato{
             void MainLoop();
 
         public: 
+            const int Width = 900;
+            const int Height = 600;
+
             SDL_Window* Window;
             SDL_Renderer* Renderer;
             
-            
             std::map<int, std::function<void()>> Story;
+            std::vector<Character*> Scene;
             
             void Run();
             void SetTextSpeed(Uint32 ts);
+            void ClearScene();
+            void SceneAdd(Character* ca);
+            void SceneRemove(Character* ca);
         
+
         Engine(std::string Name, std::string WindowIcon=""): Name(Name){
             this->Window = SDL_CreateWindow(
                                         this->Name.c_str(), 
@@ -50,7 +54,7 @@ namespace Potato{
 
         SDL_Event event;
         while (1){
-            FrameStart = SDL_GetTicks();
+            this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){
                 if (event.type==SDL_QUIT) return this->Close();
             }
@@ -60,24 +64,42 @@ namespace Potato{
     }
 
     void Engine::Close(){
-        SDL_DestroyRenderer(Renderer);
-        SDL_DestroyWindow(Window);
+        SDL_DestroyRenderer(this->Renderer);
+        SDL_DestroyWindow(this->Window);
         SDL_Quit();
     }
 
     void Engine::MainLoop(){
-        SDL_SetRenderDrawColor(Renderer, 0,0,0,255);
-        SDL_RenderClear(Renderer);
+        SDL_SetRenderDrawColor(this->Renderer, 0,0,0,255);
+        SDL_RenderClear(this->Renderer);
 
-        SDL_RenderPresent(Renderer);
+        for(auto c:this->Scene)
+            c->Draw(this->Renderer);
 
-        FrameTime = SDL_GetTicks()-FrameStart;
-        if (FPS>FrameTime)
-            SDL_Delay(FPS-FrameTime);
+        SDL_RenderPresent(this->Renderer);
+
+        this->FrameTime = SDL_GetTicks()-this->FrameStart;
+        if (this->FPS>this->FrameTime)
+            SDL_Delay(this->FPS-this->FrameTime);
     }
 
 
     void Engine::SetTextSpeed(Uint32 TextSpeed){
         this->TextSpeed = TextSpeed;
+    }
+
+    void Engine::ClearScene(){
+        this->Scene.clear();
+    }
+    void Engine::SceneAdd(Character* CharAddr){
+        this->Scene.push_back(CharAddr);
+    }
+    void Engine::SceneRemove(Character* CharAddr){
+        for (int i=0;i<this->Scene.size();i++){
+            if (this->Scene[i]==CharAddr){
+                this->Scene.erase(this->Scene.begin()+i);
+                return;
+            }
+        }
     }
 }
