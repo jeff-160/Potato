@@ -17,6 +17,7 @@
 #include <algorithm>
 
 #include "src/Character.hpp"
+#include "src/UIManager.hpp"
 #include "src/Engine.hpp"
 #include "src/Choices.hpp"
 #include "src/VFX.hpp"

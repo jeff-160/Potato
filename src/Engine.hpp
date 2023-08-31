@@ -12,6 +12,7 @@ namespace Potato{
 
             Uint32 TextSpeed = 30;
 
+            int StoryIndex = 0;
             std::map<int, std::function<void()>> Story;
             std::vector<Character*> Scene;
 
@@ -19,12 +20,16 @@ namespace Potato{
             void Close();
             void MainLoop();
             void Render(std::string is, int x, int y, int w, int h);
+            void RunStory();
 
         public: 
             const int ScreenWidth = 900;
             const int ScreenHeight = 600;
+            UICreator UISet;
             
             void Run();
+            void Step(int i);
+            void Jump(int d);
             void SetStory(std::map<int, std::function<void()>> sm);
             void SetTextSpeed(Uint32 ts);
             void ClearScene();
@@ -33,7 +38,7 @@ namespace Potato{
             void SceneSetBackground(std::string bs);
         
 
-        Engine(std::string Name, std::string WindowIcon=""): Name(Name){
+        Engine(std::string Name, std::string WindowIcon=""): Name(Name), UISet(this->ScreenWidth, this->ScreenHeight){
             this->Window = SDL_CreateWindow(
                                         this->Name.c_str(), 
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
@@ -52,6 +57,7 @@ namespace Potato{
         }
     };
 
+    // engine operating functions
     void Engine::Error(std::string err){
         std::cerr<<"Error: " << err << std::endl;
         return;
@@ -62,6 +68,7 @@ namespace Potato{
         SDL_Init(SDL_INIT_EVERYTHING);
 
         SDL_Event event;
+
         while (1){
             this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){
@@ -100,6 +107,21 @@ namespace Potato{
         SDL_DestroyTexture(CTexture);
     }
 
+    // story management
+    void Engine::RunStory(){
+        this->Story[this->StoryIndex]();
+    }
+    void Engine::Step(int Inc){
+        this->StoryIndex+=Inc;
+        this->RunStory();
+    }
+    void Engine::Jump(int Dest){
+        this->StoryIndex = Dest;
+        this->RunStory();
+    }
+
+
+    // engine modifications
     void Engine::SetStory(std::map<int, std::function<void()>> SMap){
         this->Story = SMap;
     }
@@ -108,12 +130,16 @@ namespace Potato{
         this->TextSpeed = TextSpeed;
     }
 
+
+    // scene setting
     void Engine::ClearScene(){
         this->Scene.clear();
     }
+
     void Engine::SceneAddCharacter(Character* CharAddr){
         this->Scene.push_back(CharAddr);
     }
+
     void Engine::SceneRemoveCharacter(Character* CharAddr){
         for (int i=0;i<this->Scene.size();i++){
             if (this->Scene[i]==CharAddr){
@@ -122,6 +148,7 @@ namespace Potato{
             }
         }
     }
+
     void Engine::SceneSetBackground(std::string BgSrc){
         SDL_Texture* BgTexture = IMG_LoadTexture(this->Renderer, BgSrc.c_str());
         if (BgTexture==nullptr)
