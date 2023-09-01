@@ -5,7 +5,7 @@ namespace Potato{
             SDL_Renderer* Renderer;
             
             std::string Name;
-            std::string Background;
+            std::optional<std::string> Background = std::nullopt;
             
             Uint32 FrameStart;
             int FrameTime, FPS = 100;
@@ -20,6 +20,7 @@ namespace Potato{
             void Close();
             void MainLoop();
             void Render(std::string is, int x, int y, int w, int h);
+            void RenderUI();
             void RunStory();
 
         public: 
@@ -36,6 +37,7 @@ namespace Potato{
             void SceneAddCharacter(Character* ca);
             void SceneRemoveCharacter(Character* ca);
             void SceneSetBackground(std::string bs);
+            void SceneClearBackground();
         
 
         Engine(std::string Name, std::string WindowIcon=""): Name(Name), UISet(this->ScreenWidth, this->ScreenHeight){
@@ -69,10 +71,22 @@ namespace Potato{
 
         SDL_Event event;
 
+        Engine::RunStory();
         while (1){
             this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){
                 if (event.type==SDL_QUIT) return this->Close();
+                else if (event.type==SDL_MOUSEBUTTONUP){
+                    int mx, my;
+                    SDL_GetMouseState(&mx, &my);
+                    if (
+                        mx>=this->UISet.DialogueBox.X &&
+                        mx<=this->UISet.DialogueBox.X+this->UISet.DialogueBox.Width &&
+                        my>=this->UISet.DialogueBox.Y &&
+                        my<=this->UISet.DialogueBox.Y+this->UISet.DialogueBox.Height &&
+                        this->Story.count(this->StoryIndex)>0
+                    ) Engine::RunStory();
+                }
             }
 
             MainLoop();
@@ -89,9 +103,11 @@ namespace Potato{
         SDL_SetRenderDrawColor(this->Renderer, 0,0,0,255);
         SDL_RenderClear(this->Renderer);
 
-        this->Render(this->Background, 0, 0, this->ScreenWidth, this->ScreenHeight);
+        if (this->Background.has_value())
+            this->Render(this->Background.value(), 0, 0, this->ScreenWidth, this->ScreenHeight);
         for(auto c:this->Scene)
             this->Render(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height);
+        Engine::RenderUI();
 
         SDL_RenderPresent(this->Renderer);
 
@@ -100,11 +116,36 @@ namespace Potato{
             SDL_Delay(this->FPS-this->FrameTime);
     }
 
+    // rendering
     void Engine::Render(std::string ImgSrc, int X, int Y, int Width, int Height){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
+        if (CTexture==nullptr)
+            return Engine::Error("Failed to load image: "+ImgSrc);
         SDL_Rect CBounds = {X, Y, Width, Height};
         SDL_RenderCopy(this->Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
+    }
+
+    void Engine::RenderUI(){
+        std::vector<UIElement> UIElems = {this->UISet.DialogueBox, this->UISet.NameBox};
+        for (auto elem: UIElems){
+            if (!elem.Visible) continue;
+            switch (elem.BackgroundIsColor){
+                case true:
+                    {
+                        SDL_Rect EBounds = {elem.X, elem.Y, elem.Width, elem.Height};
+                        int r, g, b;
+                        std::tie(r, g, b) = elem.BackgroundColor;
+                        SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(elem.Opacity*255));
+                        SDL_RenderFillRect(this->Renderer, &EBounds);
+                    }
+                break;
+
+                case false:
+                    Engine::Render(elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height);
+                break;
+            }
+        }
     }
 
     // story management
@@ -113,11 +154,9 @@ namespace Potato{
     }
     void Engine::Step(int Inc){
         this->StoryIndex+=Inc;
-        this->RunStory();
     }
     void Engine::Jump(int Dest){
         this->StoryIndex = Dest;
-        this->RunStory();
     }
 
 
@@ -155,5 +194,8 @@ namespace Potato{
             return this->Error("Failed to load background image");
         this->Background = BgSrc;
         SDL_DestroyTexture(BgTexture);
+    }
+    void Engine::SceneClearBackground(){
+        this->Background = std::nullopt;
     }
 }

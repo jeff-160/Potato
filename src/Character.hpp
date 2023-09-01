@@ -5,7 +5,7 @@ namespace Potato{
 
         public:
             friend class Engine;
-
+            
             std::string Name;
             double X, Y;
             int Width, Height;
