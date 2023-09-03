@@ -30,19 +30,15 @@ namespace Potato{
         private:
             UIElement DialogueBox;
             UIElement NameBox;
-
-            std::pair<int, int> DBDim;
-            std::pair<int, int> NBDim;
         public:
             friend class Engine;
             friend class Character;
         
-        UICreator(int ScreenWidth, int ScreenHeight):
-            DBDim(std::make_pair(static_cast<int>(ScreenWidth*0.8), static_cast<int>(ScreenHeight*0.4))),
-            NBDim(std::make_pair(static_cast<int>(DBDim.first*0.3), static_cast<int>(DBDim.second*0.2))),
-            DialogueBox(0,0,0,0),
-            NameBox(0,0,0,0)
-        {
+        UICreator(int ScreenWidth, int ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0){
+            std::pair<int, int> 
+                DBDim = std::make_pair(static_cast<int>(ScreenWidth*0.8), static_cast<int>(ScreenHeight*0.4)),
+                NBDim = std::make_pair(static_cast<int>(DBDim.first*0.3), static_cast<int>(DBDim.second*0.2));
+
             this->DialogueBox.X = ScreenWidth/2-DBDim.first/2, this->DialogueBox.Y = ScreenHeight-DBDim.second-10;
             this->DialogueBox.Width = DBDim.first, this->DialogueBox.Height = DBDim.second;
 
