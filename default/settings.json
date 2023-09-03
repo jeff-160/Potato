@@ -1,0 +1,10 @@
+{
+    "ScreenWidth": 900,
+    "ScreenHeight": 600,
+    "FPS": 100,
+    "TextSpeed": 50,
+    "Margin": 10,
+    "FontSize": 20,
+    "DefaultOutline": 3,
+    "NameBoxOutline": 2
+}

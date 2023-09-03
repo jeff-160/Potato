@@ -12,12 +12,12 @@ namespace Potato{
         std::string BackgroundImage = "";
         
         std::optional<std::tuple<int, int, int>> Outline = std::make_tuple(0,0,0);
-        int OutlineThickness = 2; 
+        int OutlineThickness = System::DefaultSettings["DefaultOutline"]; 
         
-        int Margin = 10;
+        int Margin = System::DefaultSettings["Margin"];
         std::string TextContent = "";
         std::optional<std::string> Font = std::nullopt;
-        int FontSize = 20;
+        int FontSize = System::DefaultSettings["FontSize"];
         int TextAlignMode = 0;
         
         bool Visible = true;
@@ -48,6 +48,7 @@ namespace Potato{
             this->NameBox.X = this->DialogueBox.X+20, this->NameBox.Y = this->DialogueBox.Y-NBDim.second;
             this->NameBox.Width = NBDim.first, this->NameBox.Height = NBDim.second;
             this->NameBox.TextAlignMode = 1;
+            this->NameBox.OutlineThickness = System::DefaultSettings["NameBoxOutline"];
             this->NameBox.Visible = false;
         }
     };

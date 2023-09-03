@@ -11,13 +11,13 @@ namespace Potato{
             std::optional<std::string> Background = std::nullopt;
             
             Uint32 FrameStart;
-            int FrameTime, FPS = 100;
+            int FrameTime, FPS = System::DefaultSettings["FPS"];
 
             std::optional<std::string> CurrentText = std::nullopt;
-            Uint32 TextSpeed = 50;
+            Uint32 TextSpeed = System::DefaultSettings["TextSpeed"];
             std::thread TextThread;
 
-            std::optional<int> StoryIndex = 0;
+            std::optional<int> StoryIndex = std::nullopt;
             std::map<int, std::function<void()>> Story;
             std::vector<Character*> Scene;
 
@@ -39,8 +39,8 @@ namespace Potato{
             friend class Character;
             friend class UIElement;
 
-            const int ScreenWidth = 900;
-            const int ScreenHeight = 600;
+            const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
+            const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
             UICreator UISet;
             
             void Run();
@@ -177,10 +177,11 @@ namespace Potato{
         this->Story[this->StoryIndex.value()]();
     }
     void Engine::Step(int Inc){
-        this->StoryIndex.value()+=Inc;
+        if (!this->StoryIndex.has_value()) return;
+        this->StoryIndex.value() +=Inc;
     }
     void Engine::Jump(int Dest){
-        this->StoryIndex.value() = Dest;
+        this->StoryIndex = Dest;
     }
 
 
