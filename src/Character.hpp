@@ -1,3 +1,6 @@
+#ifndef CHARACTER_HEADER
+#define CHARACTER_HEADER
+
 namespace Potato{
     class Character{
         private:
@@ -21,3 +24,5 @@ namespace Potato{
             Name(Name), X(X), Y(Y), Width(Width), Height(Height), Images(Images), FrameRate(FrameRate){}
     };
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef VFX_HEADER
+#define VFX_HEADER
+
 namespace Potato{
     class Effects {
         public:
@@ -27,3 +30,5 @@ namespace Potato{
 
     }
 }
+
+#endif

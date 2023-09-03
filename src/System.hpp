@@ -1,3 +1,6 @@
+#ifndef SYSTEM_HEADER
+#define SYSTEM_HEADER
+
 namespace Potato{
     class System{
         private:
@@ -14,3 +17,5 @@ namespace Potato{
         return;
     }
 }
+
+#endif

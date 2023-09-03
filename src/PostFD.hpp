@@ -1,3 +1,6 @@
+#ifndef POSTFD_HEADER
+#define POSTFD_HEADER
+
 namespace Potato{
     void Character::Speak(std::string Text){
         CurrentEngine->UISet.NameBox.TextContent = this->Name;
@@ -53,3 +56,5 @@ namespace Potato{
         }
     }
 }
+
+#endif

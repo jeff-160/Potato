@@ -1,3 +1,6 @@
+#ifndef UI_HEADER
+#define UI_HEADER
+
 namespace Potato{
     struct UIElement{
         int X, Y;
@@ -49,3 +52,5 @@ namespace Potato{
         }
     };
 }
+
+#endif

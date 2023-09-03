@@ -1,3 +1,6 @@
+#ifndef ENGINE_HEADER
+#define ENGINE_HEADER
+
 namespace Potato{
     class Engine{
         private:
@@ -215,3 +218,5 @@ namespace Potato{
         this->Background = std::nullopt;
     }
 }
+
+#endif
