@@ -15,7 +15,7 @@ namespace Potato{
 
             Uint32 TextSpeed = 50;
 
-            int StoryIndex = 0;
+            std::optional<int> StoryIndex = 0;
             std::map<int, std::function<void()>> Story;
             std::vector<Character*> Scene;
 
@@ -94,7 +94,7 @@ namespace Potato{
                         mx<=this->UISet.DialogueBox.X+this->UISet.DialogueBox.Width &&
                         my>=this->UISet.DialogueBox.Y &&
                         my<=this->UISet.DialogueBox.Y+this->UISet.DialogueBox.Height &&
-                        this->Story.count(this->StoryIndex)>0
+                        this->Story.count(this->StoryIndex.value())>0
                     ) this->RunStory();
                 }
             }
@@ -169,13 +169,15 @@ namespace Potato{
 
     // story management
     void Engine::RunStory(){
-        this->Story[this->StoryIndex]();
+        if (!this->StoryIndex.has_value() || this->Story.find(this->StoryIndex.value())==this->Story.end()) 
+            return;
+        this->Story[this->StoryIndex.value()]();
     }
     void Engine::Step(int Inc){
-        this->StoryIndex+=Inc;
+        this->StoryIndex.value()+=Inc;
     }
     void Engine::Jump(int Dest){
-        this->StoryIndex = Dest;
+        this->StoryIndex.value() = Dest;
     }
 
 
