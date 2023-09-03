@@ -13,7 +13,9 @@ namespace Potato{
             Uint32 FrameStart;
             int FrameTime, FPS = 100;
 
+            std::optional<std::string> CurrentText = std::nullopt;
             Uint32 TextSpeed = 50;
+            std::thread TextThread;
 
             std::optional<int> StoryIndex = 0;
             std::map<int, std::function<void()>> Story;
@@ -27,6 +29,7 @@ namespace Potato{
 
             static void OutputText(const std::string& str) {
                 for (char c : str) {
+                    if (CurrentEngine->CurrentText!=str) return;
                     CurrentEngine->UISet.DialogueBox.TextContent+=c;
                     std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->TextSpeed));
                 }

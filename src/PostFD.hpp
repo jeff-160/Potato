@@ -6,10 +6,10 @@ namespace Potato{
         CurrentEngine->UISet.NameBox.TextContent = this->Name;
         CurrentEngine->UISet.NameBox.Visible = true;
         CurrentEngine->UISet.DialogueBox.TextContent = "";
-        
+        CurrentEngine->CurrentText = Text;
         {
-            std::thread to(&Engine::OutputText, Text);
-            to.detach();
+            CurrentEngine->TextThread = std::thread(&Engine::OutputText, Text);
+            CurrentEngine->TextThread.detach();
         }
     }
 
