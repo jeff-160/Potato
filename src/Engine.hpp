@@ -48,7 +48,7 @@ namespace Potato{
             void Jump(int d);
             void SetStory(std::map<int, std::function<void()>> sm);
             void SetTextSpeed(Uint32 ts);
-            void ClearScene();
+            void SceneClearCharacter();
             void SceneAddCharacter(Character* ca);
             void SceneRemoveCharacter(Character* ca);
             void SceneSetBackground(std::string bs);
@@ -195,7 +195,7 @@ namespace Potato{
 
 
     // scene setting
-    void Engine::ClearScene(){
+    void Engine::SceneClearCharacter(){
         this->Scene.clear();
     }
 
