@@ -16,10 +16,20 @@
 #include <tuple>
 #include <functional>
 #include <algorithm>
+#include <chrono>
+#include <thread>
+#include <future>
 
+namespace Potato{
+    class Engine;
+    Engine* CurrentEngine = nullptr;
+}
+
+#include "src/System.hpp"
 #include "src/Character.hpp"
-#include "src/UIManager.hpp"
+#include "src/UI.hpp"
 #include "src/Engine.hpp"
+#include "src/PostFD.hpp"
 #include "src/Choices.hpp"
 #include "src/VFX.hpp"
 

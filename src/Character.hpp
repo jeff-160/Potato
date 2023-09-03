@@ -18,11 +18,6 @@ namespace Potato{
             void Speak(std::string t);
         
         Character(std::string Name, int X, int Y, int Width, int Height, std::vector<std::string> Images, int FrameRate=30): 
-            Name(Name), X(X), Y(Y), Width(Width), Height(Height), Images(Images), FrameRate(FrameRate){
-        }
+            Name(Name), X(X), Y(Y), Width(Width), Height(Height), Images(Images), FrameRate(FrameRate){}
     };
-
-    void Character::Speak(std::string Text){
-        
-    }
 }

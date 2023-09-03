@@ -10,20 +10,29 @@ namespace Potato{
             Uint32 FrameStart;
             int FrameTime, FPS = 100;
 
-            Uint32 TextSpeed = 30;
+            Uint32 TextSpeed = 50;
 
             int StoryIndex = 0;
             std::map<int, std::function<void()>> Story;
             std::vector<Character*> Scene;
 
-            void Error(std::string e);
             void Close();
             void MainLoop();
             void Render(std::string is, int x, int y, int w, int h);
             void RenderUI();
             void RunStory();
 
+            static void OutputText(const std::string& str) {
+                for (char c : str) {
+                    CurrentEngine->UISet.DialogueBox.TextContent+=c;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->TextSpeed));
+                }
+            }
+
         public: 
+            friend class Character;
+            friend class UIElement;
+
             const int ScreenWidth = 900;
             const int ScreenHeight = 600;
             UICreator UISet;
@@ -41,6 +50,7 @@ namespace Potato{
         
 
         Engine(std::string Name, std::string WindowIcon=""): Name(Name), UISet(this->ScreenWidth, this->ScreenHeight){
+            TTF_Init();
             this->Window = SDL_CreateWindow(
                                         this->Name.c_str(), 
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
@@ -51,7 +61,7 @@ namespace Potato{
             if (WindowIcon=="") return;
             SDL_Surface* Icon = IMG_Load(WindowIcon.c_str());
             if (Icon==nullptr){
-                this->Error("Invalid icon file path: " +  WindowIcon);
+                System::Error("Invalid icon file path: " +  WindowIcon);
                 return;
             }
             SDL_SetWindowIcon(this->Window, Icon);
@@ -60,18 +70,15 @@ namespace Potato{
     };
 
     // engine operating functions
-    void Engine::Error(std::string err){
-        std::cerr<<"Error: " << err << std::endl;
-        return;
-    }
-
     void Engine::Run(){
+        CurrentEngine = this;
+
         ShowWindow(GetConsoleWindow(), SW_HIDE);
         SDL_Init(SDL_INIT_EVERYTHING);
 
         SDL_Event event;
 
-        Engine::RunStory();
+        this->RunStory();
         while (1){
             this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){
@@ -85,7 +92,7 @@ namespace Potato{
                         my>=this->UISet.DialogueBox.Y &&
                         my<=this->UISet.DialogueBox.Y+this->UISet.DialogueBox.Height &&
                         this->Story.count(this->StoryIndex)>0
-                    ) Engine::RunStory();
+                    ) this->RunStory();
                 }
             }
 
@@ -94,6 +101,8 @@ namespace Potato{
     }
 
     void Engine::Close(){
+        CurrentEngine = nullptr;
+
         SDL_DestroyRenderer(this->Renderer);
         SDL_DestroyWindow(this->Window);
         SDL_Quit();
@@ -120,7 +129,7 @@ namespace Potato{
     void Engine::Render(std::string ImgSrc, int X, int Y, int Width, int Height){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
-            return Engine::Error("Failed to load image: "+ImgSrc);
+            return System::Error("Failed to load image: "+ImgSrc);
         SDL_Rect CBounds = {X, Y, Width, Height};
         SDL_RenderCopy(this->Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
@@ -130,6 +139,7 @@ namespace Potato{
         std::vector<UIElement> UIElems = {this->UISet.DialogueBox, this->UISet.NameBox};
         for (auto elem: UIElems){
             if (!elem.Visible) continue;
+
             switch (elem.BackgroundIsColor){
                 case true:
                     {
@@ -145,6 +155,12 @@ namespace Potato{
                     Engine::Render(elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height);
                 break;
             }
+
+            if (elem.Outline.has_value())
+                elem.RenderOutline();
+
+            if (elem.TextContent.length()>0)
+                elem.DisplayText();
         }
     }
 
@@ -191,7 +207,7 @@ namespace Potato{
     void Engine::SceneSetBackground(std::string BgSrc){
         SDL_Texture* BgTexture = IMG_LoadTexture(this->Renderer, BgSrc.c_str());
         if (BgTexture==nullptr)
-            return this->Error("Failed to load background image");
+            return System::Error("Failed to load background image");
         this->Background = BgSrc;
         SDL_DestroyTexture(BgTexture);
     }
