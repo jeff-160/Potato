@@ -1,6 +1,7 @@
 import json, os
 
-path = f"{os.getcwd()}\default\settings.json"
+dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+path = f"{dir}\default\settings.json"
 
 def ParseSettings():
     res = ""

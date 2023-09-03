@@ -8,6 +8,9 @@
 #include "SDL2/SDL_ttf.h"
 
 #include <windows.h>
+#include <unistd.h>
+#include <cstdio>
+#include <sstream>
 #include <iostream>
 #include <string>
 #include <optional>

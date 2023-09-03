@@ -33,7 +33,10 @@ namespace Potato{
             return PData;
         };
 
-        FILE* Pipe = popen("python src\\LoadDef.py", "r");
+        char Directory[PATH_MAX];
+        _getcwd(Directory, sizeof(Directory));
+        std::string Command = "python " + std::string(Directory) + "\\src\\LoadDef.py";
+        FILE* Pipe = popen(Command.c_str(), "r");
         
         char Buffer[128];
         std::string Output;
