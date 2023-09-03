@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
-#include <future>
 
 namespace Potato{
     class Engine;
