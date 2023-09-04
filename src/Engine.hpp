@@ -27,6 +27,7 @@ namespace Potato{
             void Render(std::string is, int x, int y, int w, int h);
             void RenderUI();
             void RunStory();
+            void CheckUIClick(int mx, int my);
 
             static void OutputText(const std::string& str) {
                 for (char c : str) {
@@ -38,6 +39,7 @@ namespace Potato{
 
         public: 
             friend class Character;
+            friend class UICreator;
             friend class UIElement;
 
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
@@ -64,6 +66,11 @@ namespace Potato{
                                         this->ScreenWidth, this->ScreenHeight, 
                                         SDL_WINDOW_SHOWN);
             this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
+
+            this->UISet.DialogueBox.Callback = [&](){
+                if (this->Story.count(this->StoryIndex.value())>0)
+                    this->RunStory();
+            };
 
             if (WindowIcon=="") return;
             SDL_Surface* Icon = IMG_Load(WindowIcon.c_str());
@@ -93,17 +100,23 @@ namespace Potato{
                 else if (event.type==SDL_MOUSEBUTTONUP){
                     int mx, my;
                     SDL_GetMouseState(&mx, &my);
-                    if (
-                        mx>=this->UISet.DialogueBox.X &&
-                        mx<=this->UISet.DialogueBox.X+this->UISet.DialogueBox.Width &&
-                        my>=this->UISet.DialogueBox.Y &&
-                        my<=this->UISet.DialogueBox.Y+this->UISet.DialogueBox.Height &&
-                        this->Story.count(this->StoryIndex.value())>0
-                    ) this->RunStory();
+                    this->CheckUIClick(mx, my);
                 }
             }
 
             MainLoop();
+        }
+    }
+
+    void Engine::CheckUIClick(int MouseX, int MouseY){
+        UIElement Elems[] = {this->UISet.DialogueBox, this->UISet.NameBox};
+        for (auto elem: Elems){
+            if (
+                MouseX>=elem.X &&
+                MouseX<=elem.X+elem.Width &&
+                MouseY>=elem.Y &&
+                MouseY<=elem.Y+elem.Height
+            ) return elem.Callback();
         }
     }
 

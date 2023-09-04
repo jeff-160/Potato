@@ -24,6 +24,8 @@ namespace Potato{
         
         bool Visible = true;
 
+        std::function<void()> Callback = [](){};
+
         void DisplayText();
         void RenderOutline();
 
