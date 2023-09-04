@@ -1,12 +1,13 @@
 <img src="https://github.com/WAP-Industries/Potato/blob/main/images/logo.png?raw=true"/>
   
 # Potato Visual Novel Framework  
-  
-Potato is a simple visual novel framework written in C++ using the SDL framework. It is written such that only a basic and fundamental understanding grasp of C++ is required to produce a complete visual novel game. Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this.
+
+Potato is a simple visual novel framework written in C++ using the SDL framework. It is written such that only a basic and fundamental understanding grasp of C++ is required to produce a complete visual novel game.   
+Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this.
 ---
 
 ## Requirements
-1. GNU g++
+1. GNU g++ (update to the latest version)
 2. Python 3.11 or higher (idk as long as it has the json module)
 3. The blood of an infant
 ---
