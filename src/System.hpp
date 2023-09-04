@@ -5,8 +5,8 @@ namespace Potato{
     class System{
         private:
             static void Error(std::string e);
-            static std::map<std::string, int> GetDefaults();
-            static std::map<std::string, int> DefaultSettings;
+            static std::map<std::string, double> GetDefaults();
+            static std::map<std::string, double> DefaultSettings;
 
         public:
             friend class Engine;
@@ -20,23 +20,20 @@ namespace Potato{
         return;
     }
 
-    std::map<std::string, int> System::GetDefaults(){
-        auto ParseData = [](std::string Data)->std::map<std::string, int>{
-            std::map<std::string, int> PData;
+    std::map<std::string, double> System::GetDefaults(){
+        auto ParseData = [](std::string Data)->std::map<std::string, double>{
+            std::map<std::string, double> PData;
             std::vector<std::string> Toks;
             std::istringstream Iss(Data);
             std::string T;
             while (std::getline(Iss, T, ','))
                 Toks.push_back(T);
             for (int i=0;i<Toks.size();i+=2)
-                PData.insert({Toks[i], std::stoi(Toks[i+1])});
+                PData.insert({Toks[i], std::stod(Toks[i+1])});
             return PData;
         };
 
-        char Directory[PATH_MAX];
-        _getcwd(Directory, sizeof(Directory));
-        std::string Command = "python " + std::string(Directory) + "\\src\\LoadDef.py";
-        FILE* Pipe = popen(Command.c_str(), "r");
+        FILE* Pipe = popen("python src\\LoadDef.py", "r");
         
         char Buffer[128];
         std::string Output;
@@ -48,7 +45,7 @@ namespace Potato{
         return ParseData(Output);
     }
 
-    std::map<std::string, int> System::DefaultSettings = GetDefaults();
+    std::map<std::string, double> System::DefaultSettings = GetDefaults();
 }
 
 #endif

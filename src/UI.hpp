@@ -8,7 +8,8 @@ namespace Potato{
         
         double Opacity = 1;
         bool BackgroundIsColor = true;
-        std::tuple<int, int, int> BackgroundColor = {255, 255, 255}, TextColor = {0,0,0};
+        std::tuple<int, int, int> BackgroundColor = std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]),
+                                    TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
         std::string BackgroundImage = "";
         
         std::optional<std::tuple<int, int, int>> Outline = std::make_tuple(0,0,0);
@@ -38,14 +39,20 @@ namespace Potato{
             friend class Character;
         
         UICreator(int ScreenWidth, int ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0){
-            std::pair<int, int> 
-                DBDim = std::make_pair(static_cast<int>(ScreenWidth*0.8), static_cast<int>(ScreenHeight*0.4)),
-                NBDim = std::make_pair(static_cast<int>(DBDim.first*0.3), static_cast<int>(DBDim.second*0.2));
+            std::pair<int, int>
+                DBDim = std::make_pair(
+                        static_cast<int>(ScreenWidth*System::DefaultSettings["DBW"]), 
+                        static_cast<int>(ScreenHeight*System::DefaultSettings["DBH"])
+                    ),
+                NBDim = std::make_pair(
+                        static_cast<int>(DBDim.first*System::DefaultSettings["NBW"]), 
+                        static_cast<int>(DBDim.second*System::DefaultSettings["NBH"])
+                    );
 
-            this->DialogueBox.X = ScreenWidth/2-DBDim.first/2, this->DialogueBox.Y = ScreenHeight-DBDim.second-10;
+            this->DialogueBox.X = ScreenWidth/2-DBDim.first/2, this->DialogueBox.Y = ScreenHeight-DBDim.second-System::DefaultSettings["DBYMargin"];
             this->DialogueBox.Width = DBDim.first, this->DialogueBox.Height = DBDim.second;
 
-            this->NameBox.X = this->DialogueBox.X+20, this->NameBox.Y = this->DialogueBox.Y-NBDim.second;
+            this->NameBox.X = this->DialogueBox.X+System::DefaultSettings["NBXMargin"], this->NameBox.Y = this->DialogueBox.Y-NBDim.second;
             this->NameBox.Width = NBDim.first, this->NameBox.Height = NBDim.second;
             this->NameBox.TextAlignMode = 1;
             this->NameBox.OutlineThickness = System::DefaultSettings["NameBoxOutline"];
