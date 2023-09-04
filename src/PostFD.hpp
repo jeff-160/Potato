@@ -46,9 +46,7 @@ namespace Potato{
 
     void UIElement::RenderOutline(){
         SDL_Rect OBounds = {this->X, this->Y, this->Width, this->Height};
-        int r, g, b;
-        std::tie(r, g, b) = this->Outline.value();
-        SDL_SetRenderDrawColor(CurrentEngine->Renderer, r, g, b, this->Opacity);
+        CurrentEngine->SetRenderColor(this->Outline.value(), this->Opacity);
         for (int i = 0; i < this->OutlineThickness; ++i) {
             SDL_RenderDrawRect(CurrentEngine->Renderer, &OBounds);
             OBounds.x += 1; OBounds.y += 1;

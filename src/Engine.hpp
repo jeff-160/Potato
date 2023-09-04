@@ -23,6 +23,7 @@ namespace Potato{
 
             void Close();
             void MainLoop();
+            void SetRenderColor(std::tuple<int, int, int> rgb, double o);
             void Render(std::string is, int x, int y, int w, int h);
             void RenderUI();
             void RunStory();
@@ -132,6 +133,12 @@ namespace Potato{
     }
 
     // rendering
+    void Engine::SetRenderColor(std::tuple<int, int, int> RGB, double Opacity){
+        int r, g, b;
+        std::tie(r, g, b) = RGB;
+        SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(Opacity*255));
+    }
+
     void Engine::Render(std::string ImgSrc, int X, int Y, int Width, int Height){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
@@ -150,9 +157,7 @@ namespace Potato{
                 case true:
                     {
                         SDL_Rect EBounds = {elem.X, elem.Y, elem.Width, elem.Height};
-                        int r, g, b;
-                        std::tie(r, g, b) = elem.BackgroundColor;
-                        SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(elem.Opacity*255));
+                        this->SetRenderColor(elem.BackgroundColor, elem.Opacity);
                         SDL_RenderFillRect(this->Renderer, &EBounds);
                     }
                 break;
