@@ -8,8 +8,9 @@ namespace Potato{
         
         double Opacity = 1;
         bool BackgroundIsColor = true;
-        std::tuple<int, int, int> BackgroundColor = std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]),
-                                    TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
+        std::tuple<int, int, int> 
+            BackgroundColor = std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]),
+            TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
         std::string BackgroundImage = "";
         
         std::optional<std::tuple<int, int, int>> Outline = std::make_tuple(0,0,0);
