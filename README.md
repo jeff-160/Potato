@@ -1,4 +1,4 @@
-<img src"https://github.com/WAP-Industries/Potato/blob/main/images/logo.png?raw=true" width=200 height=100/>
+<img src="https://github.com/WAP-Industries/Potato/blob/main/images/logo.png?raw=true" width=200 height=100/>
 # Potato Visual Novel Framework
 #### Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this
 
