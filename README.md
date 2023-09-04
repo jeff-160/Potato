@@ -13,7 +13,7 @@ To create a new Potato project:
 2. Run the build.bat file located in the root directory
 3. Enter a project name when prompted, and a compilation and .cpp file will be generated  
   
-A complete Potato project will be structured as such.
+A complete Potato project folder will be structured as such.
 ```
 [Root Directory]/
     |
