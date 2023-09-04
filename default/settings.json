@@ -2,9 +2,28 @@
     "ScreenWidth": 900,
     "ScreenHeight": 600,
     "FPS": 100,
+    
     "TextSpeed": 50,
     "Margin": 10,
     "FontSize": 20,
+    
     "DefaultOutline": 3,
-    "NameBoxOutline": 2
+    "NameBoxOutline": 2,
+    
+    "BGR": 255, 
+    "BGG": 255,
+    "BGB": 255,
+    
+    "TCR": 0, 
+    "TCG": 0,
+    "TCB": 0,
+
+    "DBW": 0.8,
+    "DBH": 0.4,
+
+    "NBW": 0.3,
+    "NBH": 0.2,
+
+    "DBYMargin": 10,
+    "NBXMargin": 20
 }
