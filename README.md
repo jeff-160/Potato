@@ -5,6 +5,7 @@
 1. GNU g++
 2. python 3.11 (idk as long as it has the json module)
 3. The blood of an infant
+---
 
 ## Project setup
 A complete Potato project will be structured as such.
