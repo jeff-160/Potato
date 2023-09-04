@@ -3,7 +3,7 @@
 
 ## Requirements
 1. GNU g++
-2. python 3.11 (idk as long as it has the json module)
+2. Python 3.11 or higher (idk as long as it has the json module)
 3. The blood of an infant
 ---
 
