@@ -2,7 +2,7 @@
   
 # Potato Visual Novel Framework  
   
-Potato is a simple visual novel framework written in C++ using the SDL framework. It is written such that only a basic and fundamental grasp of C++ is required to produce a complete visual novel game. No additional software/library installation is required, as all the essential files are already included.  
+Potato is a simple visual novel framework written in C++ using the SDL framework. It is written such that only a basic and fundamental grasp of C++ is required to produce a complete visual novel game. No additional module/library installation is required, as all the essential files are already included.  
   
 Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this.
 
