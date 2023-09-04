@@ -1,3 +1,4 @@
+<img src"https://github.com/WAP-Industries/Potato/blob/main/images/logo.png?raw=true" width=200 height=100>
 # Potato Visual Novel Framework
 #### Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this
 
@@ -13,7 +14,7 @@ To create a new Potato project:
 2. Run the build.bat file located in the root directory
 3. Enter a project name when prompted, and a compile.ps1 and .cpp file will be generated  
   
-A complete Potato project folder will be structured as such.
+A complete Potato project folder will be structured as such (excluding non-essential files).
 ```
 [Root Directory]/
     |
