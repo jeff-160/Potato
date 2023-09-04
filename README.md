@@ -1,4 +1,5 @@
 <img src="https://github.com/WAP-Industries/Potato/blob/main/images/logo.png?raw=true"/>
+  
 # Potato Visual Novel Framework
 #### Big thanks to [zhogrog](https://github.com/GaoZR2008) for christening this
 
