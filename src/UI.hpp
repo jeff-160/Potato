@@ -28,6 +28,8 @@ namespace Potato{
 
         void DisplayText();
         void RenderOutline();
+        void Show(){this->Visible=true;};
+        void Hide(){this->Visible=false;};
 
 
         UIElement(int X, int Y, int Width, int Height): X(X), Y(Y), Width(Width), Height(Height){}

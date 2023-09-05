@@ -12,12 +12,13 @@ namespace Potato{
             friend class Engine;
             
             std::string Name;
-            int X, Y;
+            float X, Y;
             int Width, Height;
             float Opacity = 1;
 
             std::vector<std::string> Images;
             int FrameRate;
+            int SlideSpeed = System::DefaultSettings["SlideSpeed"];
 
             void Draw(SDL_Renderer* r);
             void Speak(std::string t);

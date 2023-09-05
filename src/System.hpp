@@ -13,6 +13,8 @@ namespace Potato{
             friend class Character;
             friend class UIElement;
             friend class UICreator;
+            friend class Effects;
+            friend class Transitions;
     };
     
     void System::Error(std::string Err){

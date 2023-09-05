@@ -31,5 +31,9 @@
     "DBYMargin": 10,
     "NBXMargin": 20,
 
-    "FrameRate": 10
+    "FrameRate": 10,
+
+    "FadeRate": 20,
+    "SlideRate": 1,
+    "SlideSpeed": 5
 }

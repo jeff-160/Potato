@@ -8,7 +8,6 @@ namespace Potato{
             SDL_Renderer* Renderer;
             
             std::string Name;
-            // std::optional<std::string> Background = std::nullopt;
             std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
                 Background = std::make_pair(true, std::make_tuple(
                         System::DefaultSettings["SBR"],
@@ -17,7 +16,9 @@ namespace Potato{
                     ));
             
             Uint32 FrameStart;
-            int FrameTime, FPS = System::DefaultSettings["FPS"];
+            int FrameTime, FPS = static_cast<int>(1000/System::DefaultSettings["FPS"]);
+            int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
+            int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
 
             std::optional<std::string> CurrentText = std::nullopt;
             Uint32 TextSpeed = System::DefaultSettings["TextSpeed"];
@@ -49,6 +50,8 @@ namespace Potato{
             friend class Character;
             friend class UICreator;
             friend class UIElement;
+            friend class Effects;
+            friend class Transitions;
 
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
             const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
@@ -100,7 +103,7 @@ namespace Potato{
         CurrentEngine = this;
 
         ShowWindow(GetConsoleWindow(), SW_HIDE);
-        SDL_Init(SDL_INIT_EVERYTHING);
+        SDL_Init(SDL_INIT_VIDEO);
 
         SDL_Event event;
 
@@ -133,11 +136,11 @@ namespace Potato{
     }
 
     void Engine::Close(){
-        CurrentEngine = nullptr;
-
         SDL_DestroyRenderer(this->Renderer);
         SDL_DestroyWindow(this->Window);
         SDL_Quit();
+        
+        CurrentEngine = nullptr;
     }
 
     void Engine::MainLoop(){
@@ -170,8 +173,8 @@ namespace Potato{
         if (CTexture==nullptr)
             return System::Error("Failed to load image: "+ImgSrc);
         SDL_SetTextureAlphaMod(CTexture, static_cast<int>(Opacity*255));
-        SDL_Rect CBounds = {X, Y, Width, Height};
-        SDL_RenderCopy(this->Renderer, CTexture, nullptr, &CBounds);
+        SDL_FRect CBounds = {X, Y, Width, Height};
+        SDL_RenderCopyF(this->Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
     }
 

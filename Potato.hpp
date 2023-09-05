@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
+#include <cmath>
 
 namespace Potato{
     class Engine;
@@ -28,6 +29,7 @@ namespace Potato{
 }
 
 #include "src/System.hpp"
+#include "src/PThread.hpp"
 #include "src/Character.hpp"
 #include "src/UI.hpp"
 #include "src/Engine.hpp"
