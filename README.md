@@ -41,7 +41,7 @@ A complete Potato project folder will be structured as such (excluding non-essen
     |   └── default framework assets
     |
     ├── src/
-    |   └── Potato.hpp source files
+    |   └── framework source files
     |
     ├── Potato.hpp (main framework file, include in project file)
     |
