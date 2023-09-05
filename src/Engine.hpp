@@ -17,8 +17,6 @@ namespace Potato{
             
             Uint32 FrameStart;
             int FrameTime, FPS = static_cast<int>(1000/System::DefaultSettings["FPS"]);
-            int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
-            int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
 
             std::optional<std::string> CurrentText = std::nullopt;
             Uint32 TextSpeed = System::DefaultSettings["TextSpeed"];
@@ -56,6 +54,10 @@ namespace Potato{
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
             const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
             UICreator UISet;
+
+            int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
+            int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
+            float FadeSpeed = System::DefaultSettings["FadeSpeed"];
             
             void Run();
             void Step(int i);

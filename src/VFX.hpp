@@ -28,7 +28,7 @@ namespace Potato{
         PThread::RunAsync(
             [&Char](){
                 while (Char.Opacity<1){
-                    Char.Opacity+=0.1;
+                    Char.Opacity+=CurrentEngine->FadeSpeed;
                     std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->FadeRate));
                 }
                 Char.Opacity = 1;
@@ -39,7 +39,7 @@ namespace Potato{
         PThread::RunAsync(
             [&Char](){
                 while (Char.Opacity>0){
-                    Char.Opacity-=0.1;
+                    Char.Opacity-=CurrentEngine->FadeSpeed;
                     std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->FadeRate));
                 }
                 Char.Opacity = 0;
