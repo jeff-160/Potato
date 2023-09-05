@@ -145,7 +145,6 @@ namespace Potato{
         SDL_RenderClear(this->Renderer);
 
         this->RenderBackground();
-        // render characters
         for(auto c:this->Scene){
             if (c->Images.size()>1) c->ChangeFrame();
             this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
