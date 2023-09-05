@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <optional>
+#include <variant>
 #include <map>
 #include <vector>
 #include <tuple>

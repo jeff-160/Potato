@@ -8,7 +8,13 @@ namespace Potato{
             SDL_Renderer* Renderer;
             
             std::string Name;
-            std::optional<std::string> Background = std::nullopt;
+            // std::optional<std::string> Background = std::nullopt;
+            std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
+                Background = std::make_pair(true, std::make_tuple(
+                        System::DefaultSettings["SBR"],
+                        System::DefaultSettings["SBB"],
+                        System::DefaultSettings["SBG"]
+                    ));
             
             Uint32 FrameStart;
             int FrameTime, FPS = System::DefaultSettings["FPS"];
@@ -23,9 +29,11 @@ namespace Potato{
 
             void Close();
             void MainLoop();
-            void SetRenderColor(std::tuple<int, int, int> rgb, double o);
-            void Render(std::string is, int x, int y, int w, int h);
+            void SetRenderColor(std::tuple<int, int, int> rgb, float o);
+            void RenderColor(std::tuple<int, int, int> c, int x, int y, int w, int h, float o);
+            void RenderImage(std::string is, int x, int y, int w, int h, float o);
             void RenderUI();
+            void RenderBackground();
             void RunStory();
             void CheckUIClick(int mx, int my);
 
@@ -49,12 +57,16 @@ namespace Potato{
             void Run();
             void Step(int i);
             void Jump(int d);
+            
             void SetStory(std::map<int, std::function<void()>> sm);
             void SetTextSpeed(Uint32 ts);
+            
             void SceneClearCharacter();
             void SceneAddCharacter(Character* ca);
             void SceneRemoveCharacter(Character* ca);
-            void SceneSetBackground(std::string bs);
+            
+            void SceneSetBackgroundColor(std::tuple<int, int, int> c);
+            void SceneSetBackgroundImage(std::string bs);
             void SceneClearBackground();
         
 
@@ -132,10 +144,12 @@ namespace Potato{
         SDL_SetRenderDrawColor(this->Renderer, 0,0,0,255);
         SDL_RenderClear(this->Renderer);
 
-        if (this->Background.has_value())
-            this->Render(this->Background.value(), 0, 0, this->ScreenWidth, this->ScreenHeight);
-        for(auto c:this->Scene)
-            this->Render(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height);
+        this->RenderBackground();
+        // render characters
+        for(auto c:this->Scene){
+            if (c->Images.size()>1) c->ChangeFrame();
+            this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
+        }
         Engine::RenderUI();
 
         SDL_RenderPresent(this->Renderer);
@@ -146,19 +160,36 @@ namespace Potato{
     }
 
     // rendering
-    void Engine::SetRenderColor(std::tuple<int, int, int> RGB, double Opacity){
+    void Engine::SetRenderColor(std::tuple<int, int, int> RGB, float Opacity){
         int r, g, b;
         std::tie(r, g, b) = RGB;
         SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(Opacity*255));
     }
 
-    void Engine::Render(std::string ImgSrc, int X, int Y, int Width, int Height){
+    void Engine::RenderImage(std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
             return System::Error("Failed to load image: "+ImgSrc);
+        SDL_SetTextureAlphaMod(CTexture, static_cast<int>(Opacity*255));
         SDL_Rect CBounds = {X, Y, Width, Height};
         SDL_RenderCopy(this->Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
+    }
+
+    void Engine::RenderColor(std::tuple<int, int, int> Color, int X, int Y, int Width, int Height, float Opacity){
+        SDL_Rect CBounds = {X, Y, Width, Height};
+        this->SetRenderColor(Color, Opacity);
+        SDL_RenderFillRect(this->Renderer, &CBounds);
+    }
+
+    void Engine::RenderBackground(){
+        if (this->Background.first)
+            return this->RenderColor(
+                    std::get<std::tuple<int, int, int>>(this->Background.second), 
+                    0, 0, this->ScreenWidth, this->ScreenHeight, 1);
+        this->RenderImage(
+            std::get<std::string>(this->Background.second), 
+            0, 0, this->ScreenWidth, this->ScreenHeight, 1);
     }
 
     void Engine::RenderUI(){
@@ -168,15 +199,11 @@ namespace Potato{
 
             switch (elem.BackgroundIsColor){
                 case true:
-                    {
-                        SDL_Rect EBounds = {elem.X, elem.Y, elem.Width, elem.Height};
-                        this->SetRenderColor(elem.BackgroundColor, elem.Opacity);
-                        SDL_RenderFillRect(this->Renderer, &EBounds);
-                    }
+                    this->RenderColor(elem.BackgroundColor, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
                 break;
 
                 case false:
-                    Engine::Render(elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height);
+                    this->RenderImage(elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
                 break;
             }
 
@@ -231,15 +258,24 @@ namespace Potato{
         }
     }
 
-    void Engine::SceneSetBackground(std::string BgSrc){
+    void Engine::SceneSetBackgroundColor(std::tuple<int, int, int> Color){
+        this->Background = {true, Color};
+    }
+    void Engine::SceneSetBackgroundImage(std::string BgSrc){
         SDL_Texture* BgTexture = IMG_LoadTexture(this->Renderer, BgSrc.c_str());
         if (BgTexture==nullptr)
             return System::Error("Failed to load background image");
-        this->Background = BgSrc;
+        this->Background = {false, BgSrc};
         SDL_DestroyTexture(BgTexture);
     }
     void Engine::SceneClearBackground(){
-        this->Background = std::nullopt;
+        this->Background = {
+            true, std::make_tuple(
+                System::DefaultSettings["SBR"],
+                System::DefaultSettings["SBB"],
+                System::DefaultSettings["SBG"]
+            )
+        };
     }
 }
 

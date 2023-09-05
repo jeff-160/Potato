@@ -17,6 +17,10 @@
     "TCR": 0, 
     "TCG": 0,
     "TCB": 0,
+    
+    "SBR": 0, 
+    "SBG": 0,
+    "SBB": 0,
 
     "DBW": 0.8,
     "DBH": 0.4,
@@ -25,5 +29,7 @@
     "NBH": 0.2,
 
     "DBYMargin": 10,
-    "NBXMargin": 20
+    "NBXMargin": 20,
+
+    "FrameRate": 10
 }

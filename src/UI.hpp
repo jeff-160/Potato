@@ -6,7 +6,7 @@ namespace Potato{
         int X, Y;
         int Width, Height;
         
-        double Opacity = 1;
+        float Opacity = 1;
         bool BackgroundIsColor = true;
         std::tuple<int, int, int> 
             BackgroundColor = std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]),
@@ -34,12 +34,9 @@ namespace Potato{
     };
 
     class UICreator{
-        private:
+        public:
             UIElement DialogueBox;
             UIElement NameBox;
-        public:
-            friend class Engine;
-            friend class Character;
         
         UICreator(int ScreenWidth, int ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0){
             std::pair<int, int>
