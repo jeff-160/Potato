@@ -53,6 +53,6 @@ A complete Potato project folder will be structured as such (excluding non-essen
 
 ## Compilation
 To compile and run your Potato project:
-1. Open up Windows PowerShell or the VSCode powershell terminal (ctrl+shift+p)
+1. Open up Windows PowerShell or the VSCode powershell terminal `ctrl+shift+p`
 2. `cd` to your project folder
 3. Enter `& .\compile.ps1`
