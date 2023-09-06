@@ -2,6 +2,7 @@
 #define POSTFD_HEADER
 
 namespace Potato{
+    // character
     void Character::Speak(std::string Text){
         CurrentEngine->UISet.NameBox.TextContent = this->Name;
         CurrentEngine->UISet.NameBox.Visible = true;
@@ -13,6 +14,7 @@ namespace Potato{
         }
     }
 
+    // ui
     void UIElement::DisplayText(){
         int r, g, b;
         std::tie(r, g, b) = this->TextColor;
@@ -52,6 +54,24 @@ namespace Potato{
             OBounds.x += 1; OBounds.y += 1;
             OBounds.w -= 2; OBounds.h -= 2;
         }
+    }
+
+    // scene
+    void SceneCreator::SetBackgroundImage(std::string BgSrc){
+        SDL_Texture* BgTexture = IMG_LoadTexture(CurrentEngine->Renderer, BgSrc.c_str());
+        if (BgTexture==nullptr)
+            return System::Error("Failed to load background image");
+        this->Background = {false, BgSrc};
+        SDL_DestroyTexture(BgTexture);
+    }
+    void SceneCreator::RenderBackground(){
+        if (this->Background.first)
+            return CurrentEngine->RenderColor(
+                    std::get<std::tuple<int, int, int>>(this->Background.second), 
+                    0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
+        CurrentEngine->RenderImage(
+            std::get<std::string>(this->Background.second), 
+            0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
     }
 }
 

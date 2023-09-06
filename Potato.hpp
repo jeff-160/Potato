@@ -32,6 +32,7 @@ namespace Potato{
 #include "src/PThread.hpp"
 #include "src/Character.hpp"
 #include "src/UI.hpp"
+#include "src/Scene.hpp"
 #include "src/Engine.hpp"
 #include "src/PostFD.hpp"
 #include "src/Choices.hpp"

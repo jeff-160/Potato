@@ -8,12 +8,6 @@ namespace Potato{
             SDL_Renderer* Renderer;
             
             std::string Name;
-            std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
-                Background = std::make_pair(true, std::make_tuple(
-                        System::DefaultSettings["SBR"],
-                        System::DefaultSettings["SBB"],
-                        System::DefaultSettings["SBG"]
-                    ));
             
             Uint32 FrameStart;
             int FrameTime, FPS = static_cast<int>(1000/System::DefaultSettings["FPS"]);
@@ -24,7 +18,6 @@ namespace Potato{
 
             std::optional<int> StoryIndex = std::nullopt;
             std::map<int, std::function<void()>> Story;
-            std::vector<Character*> Scene;
 
             void Close();
             void MainLoop();
@@ -32,7 +25,6 @@ namespace Potato{
             void RenderColor(std::tuple<int, int, int> c, int x, int y, int w, int h, float o);
             void RenderImage(std::string is, int x, int y, int w, int h, float o);
             void RenderUI();
-            void RenderBackground();
             void RunStory();
             void CheckUIClick(int mx, int my);
 
@@ -45,6 +37,7 @@ namespace Potato{
             }
 
         public: 
+            friend class SceneCreator;
             friend class Character;
             friend class UICreator;
             friend class UIElement;
@@ -54,6 +47,8 @@ namespace Potato{
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
             const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
             UICreator UISet;
+
+            SceneCreator Scene;
 
             int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
             int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
@@ -65,14 +60,6 @@ namespace Potato{
             
             void SetStory(std::map<int, std::function<void()>> sm);
             void SetTextSpeed(Uint32 ts);
-            
-            void SceneClearCharacter();
-            void SceneAddCharacter(Character* ca);
-            void SceneRemoveCharacter(Character* ca);
-            
-            void SceneSetBackgroundColor(std::tuple<int, int, int> c);
-            void SceneSetBackgroundImage(std::string bs);
-            void SceneClearBackground();
         
 
         Engine(std::string Name, std::string WindowIcon=""): Name(Name), UISet(this->ScreenWidth, this->ScreenHeight){
@@ -149,8 +136,8 @@ namespace Potato{
         SDL_SetRenderDrawColor(this->Renderer, 0,0,0,255);
         SDL_RenderClear(this->Renderer);
 
-        this->RenderBackground();
-        for(auto c:this->Scene){
+        this->Scene.RenderBackground();
+        for(auto c:this->Scene.Characters){
             if (c->Images.size()>1) c->ChangeFrame();
             this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
         }
@@ -186,16 +173,6 @@ namespace Potato{
         SDL_RenderFillRect(this->Renderer, &CBounds);
     }
 
-    void Engine::RenderBackground(){
-        if (this->Background.first)
-            return this->RenderColor(
-                    std::get<std::tuple<int, int, int>>(this->Background.second), 
-                    0, 0, this->ScreenWidth, this->ScreenHeight, 1);
-        this->RenderImage(
-            std::get<std::string>(this->Background.second), 
-            0, 0, this->ScreenWidth, this->ScreenHeight, 1);
-    }
-
     void Engine::RenderUI(){
         std::vector<UIElement> UIElems = {this->UISet.DialogueBox, this->UISet.NameBox};
         for (auto elem: UIElems){
@@ -223,6 +200,7 @@ namespace Potato{
     void Engine::RunStory(){
         if (!this->StoryIndex.has_value() || this->Story.find(this->StoryIndex.value())==this->Story.end()) 
             return;
+        this->Scene.Transition();
         this->Story[this->StoryIndex.value()]();
     }
     void Engine::Step(int Inc){
@@ -233,7 +211,6 @@ namespace Potato{
         this->StoryIndex = Dest;
     }
 
-
     // engine modifications
     void Engine::SetStory(std::map<int, std::function<void()>> SMap){
         this->Story = SMap;
@@ -241,45 +218,6 @@ namespace Potato{
 
     void Engine::SetTextSpeed(Uint32 TextSpeed){
         this->TextSpeed = TextSpeed;
-    }
-
-
-    // scene setting
-    void Engine::SceneClearCharacter(){
-        this->Scene.clear();
-    }
-
-    void Engine::SceneAddCharacter(Character* CharAddr){
-        this->Scene.push_back(CharAddr);
-    }
-
-    void Engine::SceneRemoveCharacter(Character* CharAddr){
-        for (int i=0;i<this->Scene.size();i++){
-            if (this->Scene[i]==CharAddr){
-                this->Scene.erase(this->Scene.begin()+i);
-                return;
-            }
-        }
-    }
-
-    void Engine::SceneSetBackgroundColor(std::tuple<int, int, int> Color){
-        this->Background = {true, Color};
-    }
-    void Engine::SceneSetBackgroundImage(std::string BgSrc){
-        SDL_Texture* BgTexture = IMG_LoadTexture(this->Renderer, BgSrc.c_str());
-        if (BgTexture==nullptr)
-            return System::Error("Failed to load background image");
-        this->Background = {false, BgSrc};
-        SDL_DestroyTexture(BgTexture);
-    }
-    void Engine::SceneClearBackground(){
-        this->Background = {
-            true, std::make_tuple(
-                System::DefaultSettings["SBR"],
-                System::DefaultSettings["SBB"],
-                System::DefaultSettings["SBG"]
-            )
-        };
     }
 }
 

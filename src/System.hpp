@@ -10,6 +10,7 @@ namespace Potato{
 
         public:
             friend class Engine;
+            friend class SceneCreator;
             friend class Character;
             friend class UIElement;
             friend class UICreator;

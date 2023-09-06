@@ -10,17 +10,22 @@ namespace Potato{
         public:
             static void FadeIn(Character &c);
             static void FadeOut(Character &c);
-            static void SlideTo(Character &c, float x, float y);
-            static void SlideFor(Character &c);
+            static void Slide(Character &c, float x, float y);
     };
 
     std::pair<float, float> Effects::ComputeVelocity(Character Char, std::pair<float, float> Destination){
         double angle = std::atan2(Destination.second-Char.Y, Destination.first-Char.X);
-        return {std::cos(angle)*Char.SlideSpeed, std::sin(angle)*Char.SlideSpeed};
+        return {
+            std::cos(angle)*Char.SlideSpeed, 
+            std::sin(angle)*Char.SlideSpeed
+        };
     }
     
     bool Effects::CheckDest(Character Char, std::pair<float, float> Destination){
-        std::vector<float> Dists = {std::abs(Destination.first-Char.X), std::abs(Destination.second-Char.Y)};
+        std::vector<float> Dists = {
+            std::abs(Destination.first-Char.X), 
+            std::abs(Destination.second-Char.Y)
+        };
         return std::all_of(Dists.begin(), Dists.end(), [&](float d){return d<=Char.SlideSpeed;});
     }
 
@@ -47,7 +52,7 @@ namespace Potato{
         );
     }
 
-    void Effects::SlideTo(Character &Char, float X, float Y){
+    void Effects::Slide(Character &Char, float X, float Y){
         std::pair<float, float> Dest = {X, Y};
         std::pair<float, float> Velocity = ComputeVelocity(Char, Dest);
         PThread::RunAsync(
@@ -68,7 +73,7 @@ namespace Potato{
     };
 
     void Transitions::FadeInOut(){
-
+        std::cout<<"fuckign nigger";
     }
 }
 
