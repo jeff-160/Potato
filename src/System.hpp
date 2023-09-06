@@ -19,7 +19,7 @@ namespace Potato{
     };
     
     void System::Error(std::string Err){
-        std::cerr<<"Error: " << Err << std::endl;
+        throw std::runtime_error(Err);
         return;
     }
 
