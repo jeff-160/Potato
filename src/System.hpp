@@ -3,19 +3,18 @@
 
 namespace Potato{
     class System{
+        friend class Engine;
+        friend class SceneCreator;
+        friend class Character;
+        friend class UIElement;
+        friend class UICreator;
+        friend class Effects;
+        friend class Transitions;
+
         private:
             static void Error(std::string e);
             static std::map<std::string, double> GetDefaults();
             static std::map<std::string, double> DefaultSettings;
-
-        public:
-            friend class Engine;
-            friend class SceneCreator;
-            friend class Character;
-            friend class UIElement;
-            friend class UICreator;
-            friend class Effects;
-            friend class Transitions;
     };
     
     void System::Error(std::string Err){

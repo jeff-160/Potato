@@ -5,7 +5,7 @@ namespace Potato{
     // character
     void Character::Speak(std::string Text){
         CurrentEngine->UISet.NameBox.TextContent = this->Name;
-        CurrentEngine->UISet.NameBox.Visible = true;
+        CurrentEngine->UISet.NameBox.Show(); CurrentEngine->UISet.DialogueBox.Show();
         CurrentEngine->UISet.DialogueBox.TextContent = "";
         CurrentEngine->CurrentText = Text;
         {
@@ -47,10 +47,10 @@ namespace Potato{
     }
 
     void UIElement::RenderOutline(){
-        SDL_Rect OBounds = {this->X, this->Y, this->Width, this->Height};
-        CurrentEngine->SetRenderColor(CurrentEngine->Renderer, this->Outline.value(), this->Opacity);
+        SDL_FRect OBounds = {this->X, this->Y, this->Width, this->Height};
+        CurrentEngine->SetRenderColor(this->OutlineColor.value(), this->Opacity);
         for (int i = 0; i < this->OutlineThickness; ++i) {
-            SDL_RenderDrawRect(CurrentEngine->Renderer, &OBounds);
+            SDL_RenderDrawRectF(CurrentEngine->Renderer, &OBounds);
             OBounds.x += 1; OBounds.y += 1;
             OBounds.w -= 2; OBounds.h -= 2;
         }
@@ -67,19 +67,62 @@ namespace Potato{
     void SceneCreator::RenderBackground(){
         if (this->Background.first)
             return CurrentEngine->RenderColor(
-                    CurrentEngine->Renderer,
                     std::get<std::tuple<int, int, int>>(this->Background.second), 
                     0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
         CurrentEngine->RenderImage(
-            CurrentEngine->Renderer,
             std::get<std::string>(this->Background.second), 
             0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
     }
 
     // transitions
-    void Transitions::FadeInOut(){
-        SDL_Rect MBounds = {0,0,CurrentEngine->ScreenWidth, CurrentEngine->ScreenWidth};
-        CurrentEngine->SetRenderColor(CurrentEngine->TRenderer, {0,0,0}, 1);
+    void Transitions::FadeInOut(){ 
+        CurrentEngine->UISet.TransitionScreen.Opacity = 0;
+        CurrentEngine->UISet.TransitionScreen.Visible = true;
+        CurrentEngine->UISet.TransitionScreen.X = CurrentEngine->UISet.TransitionScreen.Y = 0;
+        
+        Threading::RunAsync(
+            [](){
+                int Dir = 1;
+                while(1){
+                    if (CurrentEngine->UISet.TransitionScreen.Opacity<=0 && Dir==-1) break;
+                    CurrentEngine->UISet.TransitionScreen.Opacity+=Dir*CurrentEngine->FadeInOutSpeed;
+                    if (CurrentEngine->UISet.TransitionScreen.Opacity>=1){
+                        CurrentEngine->UISet.TransitionScreen.Opacity = 1;
+                        Pause();
+                        Dir = -1;
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->TransitionRate));
+                }
+            }
+        );
+    }
+    
+    void Transitions::Pop(){
+        CurrentEngine->UISet.TransitionScreen.Opacity = 1;
+        CurrentEngine->UISet.TransitionScreen.Visible = true;
+        CurrentEngine->UISet.TransitionScreen.Width = CurrentEngine->UISet.TransitionScreen.Height = 0;
+
+        Threading::RunAsync(
+            [](){
+                float Perc = 0;
+                int Dir = 1;
+                while(1){
+                    if (Perc<=0 &&Dir==-1) break;
+
+                    Perc+=Dir*CurrentEngine->PopSpeed;
+                    CurrentEngine->UISet.TransitionScreen.Width = Perc*CurrentEngine->ScreenWidth;
+                    CurrentEngine->UISet.TransitionScreen.Height = Perc*CurrentEngine->ScreenHeight;
+                    CurrentEngine->UISet.TransitionScreen.X = 
+                        (int)CurrentEngine->ScreenWidth/2-CurrentEngine->UISet.TransitionScreen.Width/2;
+                    CurrentEngine->UISet.TransitionScreen.Y = 
+                        (int)CurrentEngine->ScreenHeight/2-CurrentEngine->UISet.TransitionScreen.Height/2;
+
+                    if (Perc>=1){Pause(); Dir=-1;}
+                    
+                    std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->TransitionRate));
+                }
+            }
+        );
     }
 }
 

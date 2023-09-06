@@ -4,7 +4,7 @@
 namespace Potato{
     struct UIElement{
         int X, Y;
-        int Width, Height;
+        float Width, Height;
         
         float Opacity = 1;
         bool BackgroundIsColor = true;
@@ -13,7 +13,7 @@ namespace Potato{
             TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
         std::string BackgroundImage = "";
         
-        std::optional<std::tuple<int, int, int>> Outline = std::make_tuple(0,0,0);
+        std::optional<std::tuple<int, int, int>> OutlineColor = std::make_tuple(0,0,0);
         int OutlineThickness = System::DefaultSettings["DefaultOutline"]; 
         
         int Margin = System::DefaultSettings["Margin"];
@@ -36,11 +36,17 @@ namespace Potato{
     };
 
     class UICreator{
+        friend class Engine;
+        friend class Transitions;
+        
+        private:
+            UIElement TransitionScreen;
+        
         public:
             UIElement DialogueBox;
             UIElement NameBox;
         
-        UICreator(int ScreenWidth, int ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0){
+        UICreator(int ScreenWidth, int ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0), TransitionScreen(0,0,0,0){
             std::pair<int, int>
                 DBDim = std::make_pair(
                         static_cast<int>(ScreenWidth*System::DefaultSettings["DBW"]), 
@@ -59,6 +65,12 @@ namespace Potato{
             this->NameBox.TextAlignMode = 1;
             this->NameBox.OutlineThickness = System::DefaultSettings["NameBoxOutline"];
             this->NameBox.Visible = false;
+
+            this->TransitionScreen.X = this->TransitionScreen.Y = 0;
+            this->TransitionScreen.BackgroundColor = {0,0,0};
+            this->TransitionScreen.OutlineThickness = 0;
+            this->TransitionScreen.Width = ScreenWidth, this->TransitionScreen.Height = ScreenHeight;
+            this->TransitionScreen.Visible = false;
         }
     };
 }

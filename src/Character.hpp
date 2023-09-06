@@ -3,14 +3,14 @@
 
 namespace Potato{
     class Character{
+        friend class Engine;
+        
         private:
             int CurrentFrame = 0;
             int FrameElapsed = 0;
             void ChangeFrame();
 
         public:
-            friend class Engine;
-            
             std::string Name;
             float X, Y;
             int Width, Height;

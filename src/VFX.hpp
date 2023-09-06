@@ -30,7 +30,7 @@ namespace Potato{
     }
 
     void Effects::FadeIn(Character &Char){
-        PThread::RunAsync(
+        Threading::RunAsync(
             [&Char](){
                 while (Char.Opacity<1){
                     Char.Opacity+=CurrentEngine->FadeSpeed;
@@ -41,7 +41,7 @@ namespace Potato{
         );
     }
     void Effects::FadeOut(Character &Char){
-        PThread::RunAsync(
+        Threading::RunAsync(
             [&Char](){
                 while (Char.Opacity>0){
                     Char.Opacity-=CurrentEngine->FadeSpeed;
@@ -55,7 +55,7 @@ namespace Potato{
     void Effects::Slide(Character &Char, float X, float Y){
         std::pair<float, float> Dest = {X, Y};
         std::pair<float, float> Velocity = ComputeVelocity(Char, Dest);
-        PThread::RunAsync(
+        Threading::RunAsync(
             [&Char, Dest, Velocity](){
                 while (!CheckDest(Char, Dest)){
                     Char.X+=Velocity.first;
@@ -69,7 +69,13 @@ namespace Potato{
 
 
     struct Transitions{
-        static void FadeInOut();
+        static void FadeInOut();         
+        static void Pop();
+
+        private: 
+            static void Pause(){
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }   
     };
 }
 

@@ -1,5 +1,7 @@
 namespace Potato{
     class SceneCreator{
+        friend class Engine;
+
         private:
             std::vector<Character*> Characters;
             std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
@@ -8,13 +10,11 @@ namespace Potato{
                             System::DefaultSettings["SBB"],
                             System::DefaultSettings["SBG"]
                         ));
-            std::function<void()> Transition = [](){};
+            std::optional<std::function<void()>> Transition = std::nullopt;
 
             void RenderBackground();
 
         public:
-            friend class Engine;
-
             void ClearCharacter();
             void AddCharacter(Character* ca);
             void RemoveCharacter(Character* ca);

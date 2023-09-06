@@ -29,7 +29,7 @@ namespace Potato{
 }
 
 #include "src/System.hpp"
-#include "src/PThread.hpp"
+#include "src/Threading.hpp"
 #include "src/Character.hpp"
 #include "src/UI.hpp"
 #include "src/Scene.hpp"

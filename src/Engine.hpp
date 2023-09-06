@@ -3,10 +3,16 @@
 
 namespace Potato{
     class Engine{
+        friend class SceneCreator;
+        friend class Character;
+        friend class UICreator;
+        friend class UIElement;
+        friend class Effects;
+        friend class Transitions;
+        
         private:
             SDL_Window* Window;
             SDL_Renderer* Renderer;
-            SDL_Renderer* TRenderer;
             
             std::string Name;
             
@@ -19,12 +25,14 @@ namespace Potato{
 
             std::optional<int> StoryIndex = std::nullopt;
             std::map<int, std::function<void()>> Story;
+            
+            std::vector<UIElement*> UIElems;
 
             void Close();
             void MainLoop();
-            void SetRenderColor(SDL_Renderer* r, std::tuple<int, int, int> rgb, float o);
-            void RenderColor(SDL_Renderer* r, std::tuple<int, int, int> c, int x, int y, int w, int h, float o);
-            void RenderImage(SDL_Renderer* r, std::string is, int x, int y, int w, int h, float o);
+            void SetRenderColor(std::tuple<int, int, int> rgb, float o);
+            void RenderColor(std::tuple<int, int, int> c, int x, int y, float w, float h, float o);
+            void RenderImage(std::string is, int x, int y, int w, int h, float o);
             void RenderUI();
             void RunStory();
             void CheckUIClick(int mx, int my);
@@ -37,14 +45,7 @@ namespace Potato{
                 }
             }
 
-        public: 
-            friend class SceneCreator;
-            friend class Character;
-            friend class UICreator;
-            friend class UIElement;
-            friend class Effects;
-            friend class Transitions;
-
+        public:
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
             const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
             UICreator UISet;
@@ -54,6 +55,10 @@ namespace Potato{
             int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
             int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
             float FadeSpeed = System::DefaultSettings["FadeSpeed"];
+
+            int TransitionRate = static_cast<int>(System::DefaultSettings["TransitionRate"]);
+            double FadeInOutSpeed = System::DefaultSettings["FadeInOutSpeed"]; 
+            double PopSpeed = System::DefaultSettings["PopSpeed"]; 
             
             void Run();
             void Step(int i);
@@ -70,8 +75,10 @@ namespace Potato{
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                         this->ScreenWidth, this->ScreenHeight, 
                                         SDL_WINDOW_SHOWN);
-            this->Renderer = this->TRenderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
+            this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
+            SDL_SetRenderDrawBlendMode(this->Renderer, SDL_BLENDMODE_BLEND);
 
+            this->UIElems = {&this->UISet.DialogueBox, &this->UISet.NameBox, &this->UISet.TransitionScreen};
             this->UISet.DialogueBox.Callback = [&](){
                 if (this->Story.count(this->StoryIndex.value())>0)
                     this->RunStory();
@@ -114,14 +121,13 @@ namespace Potato{
     }
 
     void Engine::CheckUIClick(int MouseX, int MouseY){
-        UIElement Elems[] = {this->UISet.DialogueBox, this->UISet.NameBox};
-        for (auto elem: Elems){
+        for (auto elem: this->UIElems){
             if (
-                MouseX>=elem.X &&
-                MouseX<=elem.X+elem.Width &&
-                MouseY>=elem.Y &&
-                MouseY<=elem.Y+elem.Height
-            ) return elem.Callback();
+                MouseX>=elem->X &&
+                MouseX<=elem->X+elem->Width &&
+                MouseY>=elem->Y &&
+                MouseY<=elem->Y+elem->Height
+            ) return elem->Callback();
         }
     }
 
@@ -135,17 +141,16 @@ namespace Potato{
 
     void Engine::MainLoop(){
         SDL_SetRenderDrawColor(this->Renderer, 0,0,0,255);
-        SDL_RenderClear(this->Renderer);
+        SDL_RenderClear(Renderer);
 
         this->Scene.RenderBackground();
         for(auto c:this->Scene.Characters){
             if (c->Images.size()>1) c->ChangeFrame();
-            this->RenderImage(this->Renderer, c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
+            this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
         }
         Engine::RenderUI();
 
         SDL_RenderPresent(this->Renderer);
-        SDL_RenderPresent(this->TRenderer);
 
         this->FrameTime = SDL_GetTicks()-this->FrameStart;
         if (this->FPS>this->FrameTime)
@@ -153,48 +158,47 @@ namespace Potato{
     }
 
     // rendering
-    void Engine::SetRenderColor(SDL_Renderer* Renderer, std::tuple<int, int, int> RGB, float Opacity){
+    void Engine::SetRenderColor(std::tuple<int, int, int> RGB, float Opacity){
         int r, g, b;
         std::tie(r, g, b) = RGB;
-        SDL_SetRenderDrawColor(Renderer, r, g, b, static_cast<int>(Opacity*255));
+        SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(Opacity*255));
     }
 
-    void Engine::RenderImage(SDL_Renderer* Renderer, std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
+    void Engine::RenderImage(std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
             return System::Error("Failed to load image: "+ImgSrc);
         SDL_SetTextureAlphaMod(CTexture, static_cast<int>(Opacity*255));
         SDL_FRect CBounds = {X, Y, Width, Height};
-        SDL_RenderCopyF(Renderer, CTexture, nullptr, &CBounds);
+        SDL_RenderCopyF(this->Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
     }
 
-    void Engine::RenderColor(SDL_Renderer* Renderer, std::tuple<int, int, int> Color, int X, int Y, int Width, int Height, float Opacity){
-        SDL_Rect CBounds = {X, Y, Width, Height};
-        this->SetRenderColor(this->Renderer, Color, Opacity);
-        SDL_RenderFillRect(Renderer, &CBounds);
+    void Engine::RenderColor(std::tuple<int, int, int> Color, int X, int Y, float Width, float Height, float Opacity){
+        SDL_FRect CBounds = {X, Y, Width, Height};
+        this->SetRenderColor(Color, Opacity);
+        SDL_RenderFillRectF(this->Renderer, &CBounds);
     }
 
     void Engine::RenderUI(){
-        std::vector<UIElement> UIElems = {this->UISet.DialogueBox, this->UISet.NameBox};
-        for (auto elem: UIElems){
-            if (!elem.Visible) continue;
+        for (auto elem: this->UIElems){
+            if (!elem->Visible) continue;
 
-            switch (elem.BackgroundIsColor){
+            switch (elem->BackgroundIsColor){
                 case true:
-                    this->RenderColor(this->Renderer, elem.BackgroundColor, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
+                    this->RenderColor(elem->BackgroundColor, elem->X, elem->Y, elem->Width, elem->Height, elem->Opacity);
                 break;
 
                 case false:
-                    this->RenderImage(this->Renderer, elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
+                    this->RenderImage(elem->BackgroundImage, elem->X, elem->Y, elem->Width, elem->Height, elem->Opacity);
                 break;
             }
 
-            if (elem.Outline.has_value())
-                elem.RenderOutline();
+            if (elem->OutlineColor.has_value())
+                elem->RenderOutline();
 
-            if (elem.TextContent.length()>0)
-                elem.DisplayText();
+            if (elem->TextContent.length()>0)
+                elem->DisplayText();
         }
     }
 
@@ -202,9 +206,15 @@ namespace Potato{
     void Engine::RunStory(){
         if (!this->StoryIndex.has_value() || this->Story.find(this->StoryIndex.value())==this->Story.end()) 
             return;
-        this->Scene.Transition();
+        
+        if (this->Scene.Transition.has_value()){
+            (*this->Scene.Transition)();
+            CurrentEngine->UISet.DialogueBox.Hide(); 
+            CurrentEngine->UISet.NameBox.Hide();
+        }
         this->Story[this->StoryIndex.value()]();
     }
+
     void Engine::Step(int Inc){
         if (!this->StoryIndex.has_value()) return;
         this->StoryIndex.value() +=Inc;
