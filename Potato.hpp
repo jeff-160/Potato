@@ -34,9 +34,9 @@ namespace Potato{
 #include "src/UI.hpp"
 #include "src/Scene.hpp"
 #include "src/Engine.hpp"
+#include "src/VFX.hpp"
 #include "src/PostFD.hpp"
 #include "src/Choices.hpp"
-#include "src/VFX.hpp"
 
 // fucky wucky main signature replace
 #define main() main(int argc, char* argv[])

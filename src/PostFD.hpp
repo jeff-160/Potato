@@ -48,7 +48,7 @@ namespace Potato{
 
     void UIElement::RenderOutline(){
         SDL_Rect OBounds = {this->X, this->Y, this->Width, this->Height};
-        CurrentEngine->SetRenderColor(this->Outline.value(), this->Opacity);
+        CurrentEngine->SetRenderColor(CurrentEngine->Renderer, this->Outline.value(), this->Opacity);
         for (int i = 0; i < this->OutlineThickness; ++i) {
             SDL_RenderDrawRect(CurrentEngine->Renderer, &OBounds);
             OBounds.x += 1; OBounds.y += 1;
@@ -67,11 +67,19 @@ namespace Potato{
     void SceneCreator::RenderBackground(){
         if (this->Background.first)
             return CurrentEngine->RenderColor(
+                    CurrentEngine->Renderer,
                     std::get<std::tuple<int, int, int>>(this->Background.second), 
                     0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
         CurrentEngine->RenderImage(
+            CurrentEngine->Renderer,
             std::get<std::string>(this->Background.second), 
             0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
+    }
+
+    // transitions
+    void Transitions::FadeInOut(){
+        SDL_Rect MBounds = {0,0,CurrentEngine->ScreenWidth, CurrentEngine->ScreenWidth};
+        CurrentEngine->SetRenderColor(CurrentEngine->TRenderer, {0,0,0}, 1);
     }
 }
 

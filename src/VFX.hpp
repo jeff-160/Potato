@@ -71,10 +71,6 @@ namespace Potato{
     struct Transitions{
         static void FadeInOut();
     };
-
-    void Transitions::FadeInOut(){
-        std::cout<<"fuckign nigger";
-    }
 }
 
 #endif

@@ -6,6 +6,7 @@ namespace Potato{
         private:
             SDL_Window* Window;
             SDL_Renderer* Renderer;
+            SDL_Renderer* TRenderer;
             
             std::string Name;
             
@@ -21,9 +22,9 @@ namespace Potato{
 
             void Close();
             void MainLoop();
-            void SetRenderColor(std::tuple<int, int, int> rgb, float o);
-            void RenderColor(std::tuple<int, int, int> c, int x, int y, int w, int h, float o);
-            void RenderImage(std::string is, int x, int y, int w, int h, float o);
+            void SetRenderColor(SDL_Renderer* r, std::tuple<int, int, int> rgb, float o);
+            void RenderColor(SDL_Renderer* r, std::tuple<int, int, int> c, int x, int y, int w, int h, float o);
+            void RenderImage(SDL_Renderer* r, std::string is, int x, int y, int w, int h, float o);
             void RenderUI();
             void RunStory();
             void CheckUIClick(int mx, int my);
@@ -69,7 +70,7 @@ namespace Potato{
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                         this->ScreenWidth, this->ScreenHeight, 
                                         SDL_WINDOW_SHOWN);
-            this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
+            this->Renderer = this->TRenderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
 
             this->UISet.DialogueBox.Callback = [&](){
                 if (this->Story.count(this->StoryIndex.value())>0)
@@ -139,11 +140,12 @@ namespace Potato{
         this->Scene.RenderBackground();
         for(auto c:this->Scene.Characters){
             if (c->Images.size()>1) c->ChangeFrame();
-            this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
+            this->RenderImage(this->Renderer, c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
         }
         Engine::RenderUI();
 
         SDL_RenderPresent(this->Renderer);
+        SDL_RenderPresent(this->TRenderer);
 
         this->FrameTime = SDL_GetTicks()-this->FrameStart;
         if (this->FPS>this->FrameTime)
@@ -151,26 +153,26 @@ namespace Potato{
     }
 
     // rendering
-    void Engine::SetRenderColor(std::tuple<int, int, int> RGB, float Opacity){
+    void Engine::SetRenderColor(SDL_Renderer* Renderer, std::tuple<int, int, int> RGB, float Opacity){
         int r, g, b;
         std::tie(r, g, b) = RGB;
-        SDL_SetRenderDrawColor(this->Renderer, r, g, b, static_cast<int>(Opacity*255));
+        SDL_SetRenderDrawColor(Renderer, r, g, b, static_cast<int>(Opacity*255));
     }
 
-    void Engine::RenderImage(std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
+    void Engine::RenderImage(SDL_Renderer* Renderer, std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
             return System::Error("Failed to load image: "+ImgSrc);
         SDL_SetTextureAlphaMod(CTexture, static_cast<int>(Opacity*255));
         SDL_FRect CBounds = {X, Y, Width, Height};
-        SDL_RenderCopyF(this->Renderer, CTexture, nullptr, &CBounds);
+        SDL_RenderCopyF(Renderer, CTexture, nullptr, &CBounds);
         SDL_DestroyTexture(CTexture);
     }
 
-    void Engine::RenderColor(std::tuple<int, int, int> Color, int X, int Y, int Width, int Height, float Opacity){
+    void Engine::RenderColor(SDL_Renderer* Renderer, std::tuple<int, int, int> Color, int X, int Y, int Width, int Height, float Opacity){
         SDL_Rect CBounds = {X, Y, Width, Height};
-        this->SetRenderColor(Color, Opacity);
-        SDL_RenderFillRect(this->Renderer, &CBounds);
+        this->SetRenderColor(this->Renderer, Color, Opacity);
+        SDL_RenderFillRect(Renderer, &CBounds);
     }
 
     void Engine::RenderUI(){
@@ -180,11 +182,11 @@ namespace Potato{
 
             switch (elem.BackgroundIsColor){
                 case true:
-                    this->RenderColor(elem.BackgroundColor, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
+                    this->RenderColor(this->Renderer, elem.BackgroundColor, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
                 break;
 
                 case false:
-                    this->RenderImage(elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
+                    this->RenderImage(this->Renderer, elem.BackgroundImage, elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity);
                 break;
             }
 
