@@ -41,7 +41,7 @@ namespace Potato{
                 for (char c : str) {
                     if (CurrentEngine->CurrentText!=str) return;
                     CurrentEngine->UISet.DialogueBox.TextContent+=c;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(CurrentEngine->TextSpeed));
+                    Threading::Delay(CurrentEngine->TextSpeed);
                 }
             }
 
@@ -52,13 +52,10 @@ namespace Potato{
 
             SceneCreator Scene;
 
-            int FadeRate = static_cast<int>(System::DefaultSettings["FadeRate"]);
-            int SlideRate = static_cast<int>(System::DefaultSettings["SlideRate"]);
-            float FadeSpeed = System::DefaultSettings["FadeSpeed"];
+            int CharacterFadeRate = static_cast<int>(System::DefaultSettings["CharacterFadeRate"]);
+            int CharacterSlideRate = static_cast<int>(System::DefaultSettings["CharacterSlideRate"]);
 
             int TransitionRate = static_cast<int>(System::DefaultSettings["TransitionRate"]);
-            double FadeInOutSpeed = System::DefaultSettings["FadeInOutSpeed"]; 
-            double PopSpeed = System::DefaultSettings["PopSpeed"]; 
             
             void Run();
             void Step(int i);
@@ -207,11 +204,10 @@ namespace Potato{
         if (!this->StoryIndex.has_value() || this->Story.find(this->StoryIndex.value())==this->Story.end()) 
             return;
         
-        if (this->Scene.Transition.has_value()){
-            (*this->Scene.Transition)();
-            CurrentEngine->UISet.DialogueBox.Hide(); 
-            CurrentEngine->UISet.NameBox.Hide();
-        }
+        this->Scene.Transition();
+        CurrentEngine->UISet.DialogueBox.Hide(); 
+        CurrentEngine->UISet.NameBox.Hide();
+        
         this->Story[this->StoryIndex.value()]();
     }
 

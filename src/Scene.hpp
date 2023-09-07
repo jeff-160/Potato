@@ -10,7 +10,7 @@ namespace Potato{
                             System::DefaultSettings["SBB"],
                             System::DefaultSettings["SBG"]
                         ));
-            std::optional<std::function<void()>> Transition = std::nullopt;
+            std::function<void()> Transition = [](){};
 
             void RenderBackground();
 

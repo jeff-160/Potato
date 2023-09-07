@@ -34,7 +34,8 @@ namespace Potato{
 #include "src/UI.hpp"
 #include "src/Scene.hpp"
 #include "src/Engine.hpp"
-#include "src/VFX.hpp"
+#include "src/Effects.hpp"
+#include "src/Transitions.hpp"
 #include "src/PostFD.hpp"
 #include "src/Choices.hpp"
 

@@ -33,12 +33,13 @@
 
     "FrameRate": 10,
 
-    "FadeRate": 20,
-    "FadeSpeed": 0.05,
-    "SlideRate": 1,
-    "SlideSpeed": 5,
+    "CharacterFadeRate": 20,
+    "CharacterFadeSpeed": 0.05,
+    "CharacterSlideRate": 1,
+    "CharacterSlideSpeed": 5,
 
     "TransitionRate": 30,
-    "FadeInOutSpeed": 0.05,
-    "PopSpeed": 0.05
+    "TransitionFadeInOutSpeed": 0.05,
+    "TransitionPopSpeed": 0.05,
+    "TransitionSlideSpeed": 20
 }

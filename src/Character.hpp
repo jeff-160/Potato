@@ -18,7 +18,6 @@ namespace Potato{
 
             std::vector<std::string> Images;
             int FrameRate;
-            int SlideSpeed = System::DefaultSettings["SlideSpeed"];
 
             void Draw(SDL_Renderer* r);
             void Speak(std::string t);
