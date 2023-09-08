@@ -3,8 +3,6 @@
 
 namespace Potato{
     class Audio{
-        friend class AudioManager;
-
         private:
             std::string Source;
 
