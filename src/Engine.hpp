@@ -3,6 +3,7 @@
 
 namespace Potato{
     class Engine{
+        friend class System;
         friend class SceneCreator;
         friend class Character;
         friend class UICreator;
@@ -66,7 +67,12 @@ namespace Potato{
         
 
         Engine(std::string Name, std::string WindowIcon=""): Name(Name), UISet(this->ScreenWidth, this->ScreenHeight){
-            TTF_Init();
+            if (
+                TTF_Init()<0 || 
+                SDL_Init(SDL_INIT_VIDEO)<0 || 
+                SDL_Init(SDL_INIT_AUDIO)<0
+            ) System::Error("Failed to create engine");
+
             this->Window = SDL_CreateWindow(
                                         this->Name.c_str(), 
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
@@ -97,7 +103,6 @@ namespace Potato{
         CurrentEngine = this;
 
         ShowWindow(GetConsoleWindow(), SW_HIDE);
-        SDL_Init(SDL_INIT_VIDEO);
 
         SDL_Event event;
 

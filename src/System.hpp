@@ -10,17 +10,13 @@ namespace Potato{
         friend class UICreator;
         friend class Effects;
         friend class Transitions;
+        friend class AudioManager;
 
         private:
             static void Error(std::string e);
             static std::map<std::string, double> GetDefaults();
             static std::map<std::string, double> DefaultSettings;
     };
-    
-    void System::Error(std::string Err){
-        throw std::runtime_error(Err);
-        return;
-    }
 
     std::map<std::string, double> System::GetDefaults(){
         auto ParseData = [](std::string Data)->std::map<std::string, double>{

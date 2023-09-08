@@ -6,6 +6,7 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
+#include "SDL2/SDL_audio.h"
 
 #include <windows.h>
 #include <cstdio>
@@ -37,6 +38,7 @@ namespace Potato{
 #include "src/Effects.hpp"
 #include "src/Transitions.hpp"
 #include "src/PostFD.hpp"
+#include "src/Audio.hpp"
 #include "src/Choices.hpp"
 
 // fucky wucky main signature replace

@@ -2,6 +2,14 @@
 #define POSTFD_HEADER
 
 namespace Potato{
+    // system error
+    void System::Error(std::string Err){
+        if (CurrentEngine!=nullptr) 
+            CurrentEngine->Close();
+        throw std::runtime_error(Err);
+        return;
+    }
+
     // character
     void Character::Speak(std::string Text){
         CurrentEngine->UISet.NameBox.TextContent = this->Name;

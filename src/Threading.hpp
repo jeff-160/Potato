@@ -2,6 +2,7 @@ namespace Potato{
     struct Threading{
         friend class Effects;
         friend class Transitions;
+        friend class Audio;
         
         static void RunAsync(std::function<void()> Callback){
             {
