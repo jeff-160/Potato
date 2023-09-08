@@ -42,9 +42,10 @@ namespace Potato{
         public:
             float Volume = 1;
             bool Loop = false;
+
             void Play();
             void Pause();
-            void Reset();
+            void Restart();
 
         Audio(std::string Source): Source(Source){
             std::tie(this->Spec, this->Buffer, this->Length, this->Device) = AudioManager::Load(Source);
@@ -64,6 +65,7 @@ namespace Potato{
                 SDL_PauseAudioDevice(this->Device, 0);
                 while (SDL_GetQueuedAudioSize(this->Device) > 0)
                     Threading::Delay(1);
+                if (this->Loop) return this->Play();
             }
         );
     }
@@ -72,7 +74,7 @@ namespace Potato{
         SDL_PauseAudioDevice(this->Device, 1);
     }
 
-    void Audio::Reset(){
+    void Audio::Restart(){
         this->Pause();
         Audio NewAudio(this->Source);
         this->Device = NewAudio.Device;
