@@ -11,9 +11,13 @@ namespace Potato{
     }
 
     // character
-    void Character::Speak(std::string Text){
-        CurrentEngine->UISet.NameBox.TextContent = this->Name;
-        CurrentEngine->UISet.NameBox.Show(); CurrentEngine->UISet.DialogueBox.Show();
+    void SceneCreator::Speak(Character* Char, std::string Text){
+        if (Char!=NULL){
+            CurrentEngine->UISet.NameBox.TextContent = Char->Name;
+            CurrentEngine->UISet.NameBox.Show(); 
+        }
+        
+        CurrentEngine->UISet.DialogueBox.Show();
         CurrentEngine->UISet.DialogueBox.TextContent = "";
         CurrentEngine->CurrentText = Text;
         {

@@ -25,6 +25,8 @@ namespace Potato{
 
             void SetTransition(void (*tc)());
             void ClearTransition();
+            
+            void Speak(Character* c, std::string t);
     };
 
     // scene modifications

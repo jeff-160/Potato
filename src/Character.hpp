@@ -20,7 +20,6 @@ namespace Potato{
             int FrameRate;
 
             void Draw(SDL_Renderer* r);
-            void Speak(std::string t);
         
         Character(std::string Name, 
                 int X, int Y, 

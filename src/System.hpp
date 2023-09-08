@@ -10,7 +10,7 @@ namespace Potato{
         friend class UICreator;
         friend class Effects;
         friend class Transitions;
-        friend class AudioManager;
+        friend class Audio;
 
         private:
             static void Error(std::string e);
