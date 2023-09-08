@@ -2,32 +2,6 @@
 #define AUDIO_HEADER
 
 namespace Potato{
-    struct AudioManager{
-        friend class Audio;
-
-        static std::tuple<SDL_AudioSpec, Uint8*, Uint32, SDL_AudioDeviceID> Load(std::string as);
-    };
-
-    std::tuple<SDL_AudioSpec, Uint8*, Uint32, SDL_AudioDeviceID> AudioManager::Load(std::string AudioSource){
-        std::string ErrMsg = "Failed to load audio: " + AudioSource;
-
-        SDL_AudioSpec Spec;
-        Uint8* Buffer = NULL;
-        Uint32 Length = 0;
-
-        if (SDL_LoadWAV(AudioSource.c_str(), &Spec, &Buffer, &Length)==NULL)
-            System::Error(ErrMsg);
-
-        SDL_AudioDeviceID Device = SDL_OpenAudioDevice(NULL, 0, &Spec, NULL, 0);
-        if (Device==0){
-            SDL_FreeWAV(Buffer);
-            SDL_CloseAudioDevice(Device);
-            System::Error(ErrMsg);
-        }
-
-        return {Spec, Buffer, Length, Device};
-    }
-
     class Audio{
         friend class AudioManager;
 
@@ -39,6 +13,26 @@ namespace Potato{
             Uint32 Length = 0;
             SDL_AudioDeviceID Device = 0;
 
+            static std::tuple<SDL_AudioSpec, Uint8*, Uint32, SDL_AudioDeviceID> Load(std::string AudioSource){
+                std::string ErrMsg = "Failed to load audio: " + AudioSource;
+
+                SDL_AudioSpec Spec;
+                Uint8* Buffer = NULL;
+                Uint32 Length = 0;
+
+                if (SDL_LoadWAV(AudioSource.c_str(), &Spec, &Buffer, &Length)==NULL)
+                    System::Error(ErrMsg);
+
+                SDL_AudioDeviceID Device = SDL_OpenAudioDevice(NULL, 0, &Spec, NULL, 0);
+                if (Device==0){
+                    SDL_FreeWAV(Buffer);
+                    SDL_CloseAudioDevice(Device);
+                    System::Error(ErrMsg);
+                }
+
+                return {Spec, Buffer, Length, Device};
+            }
+
         public:
             float Volume = 1;
             bool Loop = false;
@@ -48,7 +42,7 @@ namespace Potato{
             void Restart();
 
         Audio(std::string Source): Source(Source){
-            std::tie(this->Spec, this->Buffer, this->Length, this->Device) = AudioManager::Load(Source);
+            std::tie(this->Spec, this->Buffer, this->Length, this->Device) = Audio::Load(Source);
 
             this->Spec.freq = 44100;
             this->Spec.format = AUDIO_S16SYS;
