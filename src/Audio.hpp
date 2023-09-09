@@ -32,7 +32,6 @@ namespace Potato{
             }
 
         public:
-            float Volume = 1;
             bool Loop = false;
 
             void Play();
@@ -41,12 +40,6 @@ namespace Potato{
 
         Audio(std::string Source): Source(Source){
             std::tie(this->Spec, this->Buffer, this->Length, this->Device) = Audio::Load(Source);
-
-            this->Spec.freq = 44100;
-            this->Spec.format = AUDIO_S16SYS;
-            this->Spec.channels = 2;
-            this->Spec.samples = 1024;
-            Spec.callback = nullptr;
         }
     };
 

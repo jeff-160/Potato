@@ -79,8 +79,8 @@ namespace Potato{
     void SceneCreator::RenderBackground(){
         if (this->Background.first)
             return CurrentEngine->RenderColor(
-                    std::get<std::tuple<int, int, int>>(this->Background.second), 
-                    0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
+                std::get<std::tuple<int, int, int>>(this->Background.second), 
+                0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
         CurrentEngine->RenderImage(
             std::get<std::string>(this->Background.second), 
             0, 0, CurrentEngine->ScreenWidth, CurrentEngine->ScreenHeight, 1);
