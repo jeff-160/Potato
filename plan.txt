@@ -1,0 +1,20 @@
+Todo:
+
+--framework--
+- audio
+    - game
+        - character dialogue audio
+        - sound effects (properties: volume, loop)
+- choices
+    - choice boxes
+    - story jumping
+- game start function (maybe a title screen with a start button)
+- game end function
+
+
+--misc--
+- framework documentation
+
+
+--notes--
+large images can reduce frame rate
