@@ -44,7 +44,7 @@ namespace Potato{
 
     void Audio::Play(){
         if (!this->Channel.has_value() || this->Paused)
-            Audio::PlayChunk(-1, this->Paused);
+            this->PlayChunk(-1, this->Paused);
     }
 
     void Audio::Pause(){
@@ -55,7 +55,7 @@ namespace Potato{
     }
 
     void Audio::Restart(){
-        Audio::PlayChunk(this->Channel.has_value() ? this->Channel.value() : -1);
+        this->PlayChunk(this->Channel.has_value() ? this->Channel.value() : -1);
     }
 }
 
