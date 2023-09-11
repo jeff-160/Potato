@@ -36,8 +36,8 @@ namespace Potato{
     };
 
     class UICreator{
-        friend class Engine;
-        friend class Transitions;
+        friend struct Engine;
+        friend struct Transitions;
         
         private:
             UIElement TransitionScreen;

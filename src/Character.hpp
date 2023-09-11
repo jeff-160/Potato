@@ -3,7 +3,7 @@
 
 namespace Potato{
     struct Character{
-        friend class Engine;
+        friend struct Engine;
         
         private:
             int CurrentFrame = 0;
