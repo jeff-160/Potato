@@ -2,14 +2,14 @@
 #define ENGINE_HEADER
 
 namespace Potato{
-    class Engine{
-        friend class System;
-        friend class SceneCreator;
-        friend class Character;
-        friend class UICreator;
-        friend class UIElement;
-        friend class Effects;
-        friend class Transitions;
+    struct Engine{
+        friend struct System;
+        friend struct SceneCreator;
+        friend struct Character;
+        friend struct UICreator;
+        friend struct UIElement;
+        friend struct Effects;
+        friend struct Transitions;
         
         private:
             SDL_Window* Window;
@@ -70,7 +70,8 @@ namespace Potato{
             if (
                 TTF_Init()<0 || 
                 SDL_Init(SDL_INIT_VIDEO)<0 || 
-                SDL_Init(SDL_INIT_AUDIO)<0
+                SDL_Init(SDL_INIT_AUDIO)<0 ||
+                Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0
             ) System::Error("Failed to create engine");
 
             this->Window = SDL_CreateWindow(
@@ -83,8 +84,9 @@ namespace Potato{
 
             this->UIElems = {&this->UISet.DialogueBox, &this->UISet.NameBox, &this->UISet.TransitionScreen};
             this->UISet.DialogueBox.Callback = [&](){
-                if (this->Story.count(this->StoryIndex.value())>0)
-                    this->RunStory();
+                if (this->StoryIndex.has_value() &&
+                    this->Story.count(this->StoryIndex.value())>0
+                ) this->RunStory();
             };
 
             if (WindowIcon=="") return;
@@ -137,6 +139,7 @@ namespace Potato{
         SDL_DestroyRenderer(this->Renderer);
         SDL_DestroyWindow(this->Window);
         SDL_Quit();
+        Mix_Quit();
         
         CurrentEngine = nullptr;
     }
@@ -169,7 +172,7 @@ namespace Potato{
     void Engine::RenderImage(std::string ImgSrc, int X, int Y, int Width, int Height, float Opacity){
         SDL_Texture* CTexture = IMG_LoadTexture(this->Renderer, ImgSrc.c_str());
         if (CTexture==nullptr)
-            return System::Error("Failed to load image: "+ImgSrc);
+            System::Error("Failed to load image: "+ImgSrc);
         SDL_SetTextureAlphaMod(CTexture, static_cast<int>(Opacity*255));
         SDL_FRect CBounds = {X, Y, Width, Height};
         SDL_RenderCopyF(this->Renderer, CTexture, nullptr, &CBounds);

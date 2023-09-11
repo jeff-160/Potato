@@ -1,6 +1,6 @@
 namespace Potato{
-    class SceneCreator{
-        friend class Engine;
+    struct SceneCreator{
+        friend struct Engine;
 
         private:
             std::vector<Character*> Characters;

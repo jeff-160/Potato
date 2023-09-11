@@ -2,15 +2,15 @@
 #define SYSTEM_HEADER
 
 namespace Potato{
-    class System{
-        friend class Engine;
-        friend class SceneCreator;
-        friend class Character;
-        friend class UIElement;
-        friend class UICreator;
-        friend class Effects;
-        friend class Transitions;
-        friend class Audio;
+    struct System{
+        friend struct Engine;
+        friend struct SceneCreator;
+        friend struct Character;
+        friend struct UIElement;
+        friend struct UICreator;
+        friend struct Effects;
+        friend struct Transitions;
+        friend struct Audio;
 
         private:
             static void Error(std::string e);

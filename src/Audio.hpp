@@ -2,68 +2,60 @@
 #define AUDIO_HEADER
 
 namespace Potato{
-    class Audio{
+    struct Audio{
         private:
-            std::string Source;
-
-            SDL_AudioSpec Spec;
-            Uint8* Buffer = nullptr;
-            Uint32 Length = 0;
-            SDL_AudioDeviceID Device = 0;
-
-            static std::tuple<SDL_AudioSpec, Uint8*, Uint32, SDL_AudioDeviceID> Load(std::string AudioSource){
-                std::string ErrMsg = "Failed to load audio: " + AudioSource;
-
-                SDL_AudioSpec Spec;
-                Uint8* Buffer = NULL;
-                Uint32 Length = 0;
-
-                if (SDL_LoadWAV(AudioSource.c_str(), &Spec, &Buffer, &Length)==NULL)
-                    System::Error(ErrMsg);
-
-                SDL_AudioDeviceID Device = SDL_OpenAudioDevice(NULL, 0, &Spec, NULL, 0);
-                if (Device==0){
-                    SDL_FreeWAV(Buffer);
-                    SDL_CloseAudioDevice(Device);
-                    System::Error(ErrMsg);
-                }
-
-                return {Spec, Buffer, Length, Device};
+            Mix_Chunk* Chunk = NULL;
+            std::optional<int> Channel = std::nullopt;
+            bool Paused = false;
+            
+            void PlayChunk(int ChannelNo=-1, bool Resume=false){
+                Threading::RunAsync(
+                    [&, ChannelNo, Resume](){
+                        Mix_Volume(ChannelNo, MIX_MAX_VOLUME*this->Volume);
+                        if (Resume){
+                            Mix_Resume(ChannelNo);
+                            this->Paused = false;
+                        }
+                        else
+                            this->Channel = Mix_PlayChannel(ChannelNo, this->Chunk, 0);
+                        while (Mix_Playing(this->Channel.value()))
+                            Threading::Delay(1);
+                        this->Channel = std::nullopt;
+                        if (this->Loop)
+                            return this->PlayChunk(ChannelNo);
+                    }
+                );
             }
 
         public:
             bool Loop = false;
+            float Volume = 1;
 
             void Play();
             void Pause();
             void Restart();
 
-        Audio(std::string Source): Source(Source){
-            std::tie(this->Spec, this->Buffer, this->Length, this->Device) = Audio::Load(Source);
-        }
+            Audio(std::string Source){
+                this->Chunk = Mix_LoadWAV(Source.c_str());
+                if (this->Chunk==NULL)
+                    System::Error("Failed to load audio: " + Source);
+            }
     };
 
     void Audio::Play(){
-        Threading::RunAsync(
-            [&](){
-                SDL_QueueAudio(this->Device, this->Buffer, this->Length);
-                SDL_PauseAudioDevice(this->Device, 0);
-                while (SDL_GetQueuedAudioSize(this->Device) > 0)
-                    Threading::Delay(1);
-                if (this->Loop) return this->Play();
-            }
-        );
+        if (!this->Channel.has_value() || this->Paused)
+            Audio::PlayChunk(-1, this->Paused);
     }
 
     void Audio::Pause(){
-        SDL_PauseAudioDevice(this->Device, 1);
+        if (this->Channel.has_value()){
+            this->Paused = true;
+            Mix_Pause(this->Channel.value());
+        }
     }
 
     void Audio::Restart(){
-        this->Pause();
-        Audio NewAudio(this->Source);
-        this->Device = NewAudio.Device;
-        this->Play();
+        Audio::PlayChunk(this->Channel.has_value() ? this->Channel.value() : -1);
     }
 }
 

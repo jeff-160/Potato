@@ -23,7 +23,7 @@ set "tabchar=    "
 
 :CreateCompile
     echo echo Compiling...; > %compile_file%
-    echo g++ '%project_name%.cpp' -Llib -Wall -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -o '%project_name%'; >> %compile_file%
+    echo g++ '%project_name%.cpp' -Llib -Wall -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -o '%project_name%'; >> %compile_file%
     echo if ($?) {echo Running...; .\\'%project_name%'} >> %compile_file%
     exit
 

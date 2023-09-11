@@ -2,7 +2,7 @@
 #define CHARACTER_HEADER
 
 namespace Potato{
-    class Character{
+    struct Character{
         friend class Engine;
         
         private:
