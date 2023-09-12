@@ -7,7 +7,7 @@ namespace Potato{
         friend struct SceneCreator;
         friend struct Character;
         friend struct UIElement;
-        friend struct DialogueUISet;
+        friend struct UISet;
         friend struct Effects;
         friend struct Transitions;
         friend struct Audio;

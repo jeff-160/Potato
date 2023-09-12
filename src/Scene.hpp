@@ -4,13 +4,14 @@ namespace Potato{
 
         private:
             std::vector<Character*> Characters;
-            std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
+            std::pair<bool, Potato::BgType> 
                     Background = std::make_pair(true, std::make_tuple(
                             System::DefaultSettings["SBR"],
                             System::DefaultSettings["SBB"],
                             System::DefaultSettings["SBG"]
                         ));
             std::function<void()> Transition = [](){};
+            std::vector<UIElement> ChoiceBoxes;
 
             void RenderBackground();
 

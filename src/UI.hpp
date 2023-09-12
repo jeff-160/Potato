@@ -8,7 +8,7 @@ namespace Potato{
         
         float Opacity = 1;
         
-        std::variant<std::string, std::tuple<int, int, int>> Background =  
+        std::optional<Potato::BgType> Background = 
                 std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]);
         std::tuple<int, int, int> 
             TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
@@ -18,7 +18,6 @@ namespace Potato{
         
         int Margin = System::DefaultSettings["Margin"];
         std::string TextContent = "";
-        std::optional<std::string> Font = std::nullopt;
         int FontSize = System::DefaultSettings["FontSize"];
         int TextAlignMode = 0;
         
@@ -34,7 +33,7 @@ namespace Potato{
         UIElement(int X, int Y, int Width, int Height): X(X), Y(Y), Width(Width), Height(Height){}
     };
 
-    class DialogueUISet{
+    class UISet{
         friend struct Engine;
         friend struct Transitions;
         
@@ -45,7 +44,7 @@ namespace Potato{
             UIElement DialogueBox;
             UIElement NameBox;
         
-        DialogueUISet(float ScreenWidth, float ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0), TransitionScreen(0,0,0,0){
+        UISet(float ScreenWidth, float ScreenHeight): DialogueBox(0,0,0,0), NameBox(0,0,0,0), TransitionScreen(0,0,0,0){
             std::pair<int, int>
                 DBDim = std::make_pair(
                         ScreenWidth*System::DefaultSettings["DBW"], 

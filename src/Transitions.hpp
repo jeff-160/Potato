@@ -14,18 +14,18 @@ namespace Potato{
     };
 
     void Transitions::FadeInOut(){ 
-        CurrentEngine->DialogueUI.TransitionScreen.Opacity = 0;
-        CurrentEngine->DialogueUI.TransitionScreen.Visible = true;
-        CurrentEngine->DialogueUI.TransitionScreen.X = CurrentEngine->DialogueUI.TransitionScreen.Y = 0;
+        CurrentEngine->UI.TransitionScreen.Opacity = 0;
+        CurrentEngine->UI.TransitionScreen.Visible = true;
+        CurrentEngine->UI.TransitionScreen.X = CurrentEngine->UI.TransitionScreen.Y = 0;
         
         Threading::RunAsync(
             [](){
                 int Dir = 1;
                 while(1){
-                    if (CurrentEngine->DialogueUI.TransitionScreen.Opacity<=0 && Dir==-1) break;
-                    CurrentEngine->DialogueUI.TransitionScreen.Opacity+=Dir*System::DefaultSettings["TransitionFadeInOutSpeed"];
-                    if (CurrentEngine->DialogueUI.TransitionScreen.Opacity>=1){
-                        CurrentEngine->DialogueUI.TransitionScreen.Opacity = 1;
+                    if (CurrentEngine->UI.TransitionScreen.Opacity<=0 && Dir==-1) break;
+                    CurrentEngine->UI.TransitionScreen.Opacity+=Dir*System::DefaultSettings["TransitionFadeInOutSpeed"];
+                    if (CurrentEngine->UI.TransitionScreen.Opacity>=1){
+                        CurrentEngine->UI.TransitionScreen.Opacity = 1;
                         Pause();
                         Dir = -1;
                     }
@@ -36,9 +36,9 @@ namespace Potato{
     }
     
     void Transitions::Pop(){
-        CurrentEngine->DialogueUI.TransitionScreen.Opacity = 1;
-        CurrentEngine->DialogueUI.TransitionScreen.Visible = true;
-        CurrentEngine->DialogueUI.TransitionScreen.Width = CurrentEngine->DialogueUI.TransitionScreen.Height = 0;
+        CurrentEngine->UI.TransitionScreen.Opacity = 1;
+        CurrentEngine->UI.TransitionScreen.Visible = true;
+        CurrentEngine->UI.TransitionScreen.Width = CurrentEngine->UI.TransitionScreen.Height = 0;
 
         Threading::RunAsync(
             [](){
@@ -47,12 +47,12 @@ namespace Potato{
                 while(1){
                     if (Perc<=0 &&Dir==-1) break;
                     Perc+=Dir*System::DefaultSettings["TransitionPopSpeed"];
-                    CurrentEngine->DialogueUI.TransitionScreen.Width = Perc*CurrentEngine->ScreenWidth;
-                    CurrentEngine->DialogueUI.TransitionScreen.Height = Perc*CurrentEngine->ScreenHeight;
-                    CurrentEngine->DialogueUI.TransitionScreen.X = 
-                        (int)CurrentEngine->ScreenWidth/2-CurrentEngine->DialogueUI.TransitionScreen.Width/2;
-                    CurrentEngine->DialogueUI.TransitionScreen.Y = 
-                        (int)CurrentEngine->ScreenHeight/2-CurrentEngine->DialogueUI.TransitionScreen.Height/2;
+                    CurrentEngine->UI.TransitionScreen.Width = Perc*CurrentEngine->ScreenWidth;
+                    CurrentEngine->UI.TransitionScreen.Height = Perc*CurrentEngine->ScreenHeight;
+                    CurrentEngine->UI.TransitionScreen.X = 
+                        (int)CurrentEngine->ScreenWidth/2-CurrentEngine->UI.TransitionScreen.Width/2;
+                    CurrentEngine->UI.TransitionScreen.Y = 
+                        (int)CurrentEngine->ScreenHeight/2-CurrentEngine->UI.TransitionScreen.Height/2;
                     if (Perc>=1){Pause(); Dir=-1;}
                     Threading::Delay(CurrentEngine->TransitionRate);
                 }
@@ -61,20 +61,20 @@ namespace Potato{
     }
 
     void Transitions::Slide(){
-        CurrentEngine->DialogueUI.TransitionScreen.Opacity = 1;
-        CurrentEngine->DialogueUI.TransitionScreen.Visible = true;
-        CurrentEngine->DialogueUI.TransitionScreen.Width = CurrentEngine->ScreenWidth;
-        CurrentEngine->DialogueUI.TransitionScreen.Height = CurrentEngine->ScreenHeight;
-        CurrentEngine->DialogueUI.TransitionScreen.X = -CurrentEngine->DialogueUI.TransitionScreen.Width;
-        CurrentEngine->DialogueUI.TransitionScreen.Y = 0;
+        CurrentEngine->UI.TransitionScreen.Opacity = 1;
+        CurrentEngine->UI.TransitionScreen.Visible = true;
+        CurrentEngine->UI.TransitionScreen.Width = CurrentEngine->ScreenWidth;
+        CurrentEngine->UI.TransitionScreen.Height = CurrentEngine->ScreenHeight;
+        CurrentEngine->UI.TransitionScreen.X = -CurrentEngine->UI.TransitionScreen.Width;
+        CurrentEngine->UI.TransitionScreen.Y = 0;
 
         Threading::RunAsync(
             [](){
                 while (1){
-                    if (CurrentEngine->DialogueUI.TransitionScreen.X==CurrentEngine->ScreenWidth) 
+                    if (CurrentEngine->UI.TransitionScreen.X==CurrentEngine->ScreenWidth) 
                         break;
-                    CurrentEngine->DialogueUI.TransitionScreen.X+=static_cast<int>(System::DefaultSettings["TransitionSlideSpeed"]);
-                    if (CurrentEngine->DialogueUI.TransitionScreen.X==0)
+                    CurrentEngine->UI.TransitionScreen.X+=static_cast<int>(System::DefaultSettings["TransitionSlideSpeed"]);
+                    if (CurrentEngine->UI.TransitionScreen.X==0)
                         Pause();
                     Threading::Delay(CurrentEngine->TransitionRate);
                 }

@@ -12,13 +12,15 @@ namespace Potato{
 
     // character
     void SceneCreator::Speak(Character* Char, std::string Text){
+        if (this->ChoiceBoxes.size()>0) return;
+
         if (Char!=NULL){
-            CurrentEngine->DialogueUI.NameBox.TextContent = Char->Name;
-            CurrentEngine->DialogueUI.NameBox.Show(); 
+            CurrentEngine->UI.NameBox.TextContent = Char->Name;
+            CurrentEngine->UI.NameBox.Show(); 
         }
         
-        CurrentEngine->DialogueUI.DialogueBox.Show();
-        CurrentEngine->DialogueUI.DialogueBox.TextContent = "";
+        CurrentEngine->UI.DialogueBox.Show();
+        CurrentEngine->UI.DialogueBox.TextContent = "";
         CurrentEngine->CurrentText = Text;
         {
             CurrentEngine->TextThread = std::thread(&Engine::OutputText, Text);
@@ -32,7 +34,7 @@ namespace Potato{
         std::tie(r, g, b) = this->TextColor;
         SDL_Color Color = {r, g, b, 255};
 
-        std::string FontSrc = this->Font.has_value() ? this->Font.value() : "default/font.ttf";
+        std::string FontSrc = CurrentEngine->Font.has_value() ? CurrentEngine->Font.value() : "default/font.ttf";
         TTF_Font* TextFont = TTF_OpenFont(FontSrc.c_str(), this->FontSize);
         if (TextFont==nullptr)
             return System::Error("Failed to load font: " + FontSrc);
@@ -88,26 +90,37 @@ namespace Potato{
 
     // choices
     void SceneCreator::Choice(std::vector<Potato::Choice> Choices){
-        float CHeight;
+        CurrentEngine->UI.DialogueBox.Hide();
+        CurrentEngine->UI.NameBox.Hide();
+
         int CY = -static_cast<int>(Choices.size()/2);
+        int Margin = 10;
 
         for (auto Choice : Choices){
             UIElement ChoiceBox(
                 0,0,
                 CurrentEngine->ScreenWidth*0.7,
-                CurrentEngine->ScreenHeight/Choices.size()
+                CurrentEngine->ScreenHeight/10
             );
             ChoiceBox.X = static_cast<int>((CurrentEngine->ScreenWidth-ChoiceBox.Width)/2);
-            ChoiceBox.Y = CurrentEngine->ScreenHeight/2+CY*ChoiceBox.Height;
+            ChoiceBox.Y = CurrentEngine->ScreenHeight/2+CY*ChoiceBox.Height+CY*Margin;
             
             ChoiceBox.TextContent = Choice.Text;
+            ChoiceBox.TextAlignMode = 1;
             ChoiceBox.TextColor = Choice.FontColor;
+
             if (std::holds_alternative<std::string>(Choice.Background))
                 ChoiceBox.Background = std::get<std::string>(Choice.Background);
             else
                 ChoiceBox.Background = std::get<std::tuple<int, int, int>>(Choice.Background);
 
-            CurrentEngine->UIElements.push_back(&ChoiceBox);
+            ChoiceBox.Callback = [&, Choice](){
+                this->ChoiceBoxes.clear();
+                CurrentEngine->Jump(Choice.StoryIndex);
+                CurrentEngine->RunStory();
+            };
+
+            this->ChoiceBoxes.push_back(ChoiceBox);
             CY++;
         }
     }

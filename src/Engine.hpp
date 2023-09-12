@@ -6,7 +6,7 @@ namespace Potato{
         friend struct System;
         friend struct SceneCreator;
         friend struct Character;
-        friend struct DialogueUISet;
+        friend struct UISet;
         friend struct UIElement;
         friend struct Effects;
         friend struct Transitions;
@@ -27,19 +27,27 @@ namespace Potato{
             std::optional<int> StoryIndex = std::nullopt;
             std::map<int, std::function<void()>> Story;
 
+            UIElement EndScreen, EndMask, EndText;
+            std::vector<UIElement*> EndUI;
+
+            std::optional<std::string> Font = std::nullopt;            
+
             void Close();
             void MainLoop();
             void SetRenderColor(std::tuple<int, int, int> rgb, float o);
             void RenderColor(std::tuple<int, int, int> c, int x, int y, float w, float h, float o);
             void RenderImage(std::string is, int x, int y, int w, int h, float o);
-            void RenderUI();
+            void RenderUI(UIElement e);
             void RunStory();
             void CheckUIClick(int mx, int my);
 
             static void OutputText(const std::string& str) {
                 for (char c : str) {
-                    if (CurrentEngine->CurrentText!=str) return;
-                    CurrentEngine->DialogueUI.DialogueBox.TextContent+=c;
+                    if (CurrentEngine->CurrentText!=str) {
+                        CurrentEngine->UI.DialogueBox.TextContent = "";
+                        return;
+                    }
+                    CurrentEngine->UI.DialogueBox.TextContent+=c;
                     Threading::Delay(CurrentEngine->TextSpeed);
                 }
             }
@@ -47,7 +55,7 @@ namespace Potato{
         public:
             const int ScreenWidth = System::DefaultSettings["ScreenWidth"];
             const int ScreenHeight = System::DefaultSettings["ScreenHeight"];
-            DialogueUISet DialogueUI;
+            UISet UI;
             std::vector<UIElement*> UIElements;
 
             SceneCreator Scene;
@@ -63,9 +71,13 @@ namespace Potato{
             
             void SetStory(std::map<int, std::function<void()>> sm);
             void SetTextSpeed(Uint32 ts);
+            void SetFont(std::string f);
+
+            void End(std::vector<std::string> t, Potato::BgType b);
         
 
-        Engine(std::string Name, std::string WindowIcon=""): Name(Name), DialogueUI(this->ScreenWidth, this->ScreenHeight){
+        Engine(std::string Name, std::string WindowIcon=""): 
+        Name(Name), UI(this->ScreenWidth, this->ScreenHeight), EndScreen(0,0,0,0), EndMask(0,0,0,0), EndText(0,0,0,0){
             if (
                 TTF_Init()<0 || 
                 SDL_Init(SDL_INIT_VIDEO)<0 || 
@@ -81,12 +93,27 @@ namespace Potato{
             this->Renderer = SDL_CreateRenderer(this->Window, -1, SDL_RENDERER_ACCELERATED);
             SDL_SetRenderDrawBlendMode(this->Renderer, SDL_BLENDMODE_BLEND);
 
-            this->UIElements = {&this->DialogueUI.DialogueBox, &this->DialogueUI.NameBox, &this->DialogueUI.TransitionScreen};
-            this->DialogueUI.DialogueBox.Callback = [&](){
+            this->UIElements = {&this->UI.DialogueBox, &this->UI.NameBox, &this->UI.TransitionScreen};
+            this->UI.DialogueBox.Callback = [&](){
                 if (this->StoryIndex.has_value() &&
                     this->Story.count(this->StoryIndex.value())>0
                 ) this->RunStory();
             };
+            
+            // end screen
+            this->EndScreen.Width = this->EndMask.Width = this->ScreenWidth;
+            this->EndScreen.Height = this->EndMask.Height = this->ScreenHeight;
+            this->EndMask.Opacity = 0.5; this->EndMask.Background = std::make_tuple(0,0,0);
+            this->EndText.Width = this->ScreenWidth*0.7, this->EndText.Height = this->ScreenHeight*0.7;
+            this->EndText.Background = std::nullopt;
+            this->EndText.TextColor = {255, 255, 255}; this->EndText.FontSize = this->EndText.Height/10;
+            this->EndText.X = static_cast<int>((this->ScreenWidth-this->EndText.Width)/2);
+            this->EndText.Y = static_cast<int>((this->ScreenHeight-this->EndText.Height)/2);
+            this->EndUI = {&this->EndScreen, &this->EndMask, &this->EndText};
+            for (auto e:this->EndUI) {
+                e->Visible = false;
+                e->OutlineThickness = 0;
+            }
 
             if (WindowIcon=="") return;
             SDL_Surface* Icon = IMG_Load(WindowIcon.c_str());
@@ -124,13 +151,15 @@ namespace Potato{
     }
 
     void Engine::CheckUIClick(int MouseX, int MouseY){
-        for (auto elem: this->UIElements){
+        std::vector<UIElement> elems = this->Scene.ChoiceBoxes;
+        for (auto e:this->UIElements) elems.push_back(*e);
+        for (auto elem: elems){
             if (
-                MouseX>=elem->X &&
-                MouseX<=elem->X+elem->Width &&
-                MouseY>=elem->Y &&
-                MouseY<=elem->Y+elem->Height
-            ) return elem->Callback();
+                MouseX>=elem.X &&
+                MouseX<=elem.X+elem.Width &&
+                MouseY>=elem.Y &&
+                MouseY<=elem.Y+elem.Height
+            ) return elem.Callback();
         }
     }
 
@@ -152,7 +181,9 @@ namespace Potato{
             if (c->Images.size()>1) c->ChangeFrame();
             this->RenderImage(c->Images[c->CurrentFrame], c->X, c->Y, c->Width, c->Height, c->Opacity);
         }
-        Engine::RenderUI();
+        for (auto e:this->UIElements) this->RenderUI(*e);
+        for (auto c:this->Scene.ChoiceBoxes) this->RenderUI(c);
+        for (auto e:this->EndUI) this->RenderUI(*e);
 
         SDL_RenderPresent(this->Renderer);
 
@@ -184,32 +215,32 @@ namespace Potato{
         SDL_RenderFillRectF(this->Renderer, &CBounds);
     }
 
-    void Engine::RenderUI(){
-        for (auto elem: this->UIElements){
-            if (!elem->Visible) continue;
+    void Engine::RenderUI(UIElement elem){
+        if (!elem.Visible) return;
 
-            switch (std::holds_alternative<std::string>(elem->Background)){
+        if (elem.Background.has_value()){
+            switch (std::holds_alternative<std::string>(elem.Background.value())){
                 case true:
                     this->RenderImage(
-                        std::get<std::string>(elem->Background),
-                        elem->X, elem->Y, elem->Width, elem->Height, elem->Opacity
+                        std::get<std::string>(elem.Background.value()),
+                        elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity
                     );
                 break;
 
                 case false:
                     this->RenderColor(
-                        std::get<std::tuple<int, int, int>>(elem->Background),
-                        elem->X, elem->Y, elem->Width, elem->Height, elem->Opacity
+                        std::get<std::tuple<int, int, int>>(elem.Background.value()),
+                        elem.X, elem.Y, elem.Width, elem.Height, elem.Opacity
                     );
                 break;
             }
-
-            if (elem->OutlineColor.has_value())
-                elem->RenderOutline();
-
-            if (elem->TextContent.length()>0)
-                elem->DisplayText();
         }
+
+        if (elem.OutlineColor.has_value())
+            elem.RenderOutline();
+
+        if (elem.TextContent.length()>0)
+            elem.DisplayText();
     }
 
     // story management
@@ -218,8 +249,8 @@ namespace Potato{
             return;
         
         this->Scene.Transition();
-        CurrentEngine->DialogueUI.DialogueBox.Hide(); 
-        CurrentEngine->DialogueUI.NameBox.Hide();
+        CurrentEngine->UI.DialogueBox.Hide(); 
+        CurrentEngine->UI.NameBox.Hide();
         
         this->Story[this->StoryIndex.value()]();
     }
@@ -239,6 +270,25 @@ namespace Potato{
 
     void Engine::SetTextSpeed(Uint32 TextSpeed){
         this->TextSpeed = TextSpeed;
+    }
+
+    void Engine::SetFont(std::string Font){
+        TTF_Font* EngineFont = TTF_OpenFont(Font.c_str(), 0);
+        if (EngineFont==nullptr)
+            return System::Error("Failed to load font: " + Font);
+        this->Font = Font;
+        TTF_CloseFont(EngineFont);
+    }
+
+    // engine start and end
+    void Engine::End(std::vector<std::string> Texts, BgType Background=std::make_tuple(0,0,0)){
+        if (std::holds_alternative<std::string>(Background))
+            this->Scene.SetBackgroundImage(std::get<std::string>(Background));
+        else
+            this->Scene.SetBackgroundColor(std::get<std::tuple<int, int, int>>(Background));
+
+        for (auto e: this->EndUI) e->Visible = true;
+        this->EndScreen.Background = Background;
     }
 }
 
