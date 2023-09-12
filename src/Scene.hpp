@@ -4,7 +4,7 @@ namespace Potato{
 
         private:
             std::vector<Character*> Characters;
-            std::pair<bool, Potato::BgType> 
+            std::pair<bool, std::variant<std::string, std::tuple<int, int, int>>> 
                     Background = std::make_pair(true, std::make_tuple(
                             System::DefaultSettings["SBR"],
                             System::DefaultSettings["SBB"],

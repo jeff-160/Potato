@@ -25,8 +25,6 @@
 #include <cmath>
 
 namespace Potato{
-    typedef std::variant<std::string, std::tuple<int, int, int>> BgType;
-    
     class Engine;
     Engine* CurrentEngine = nullptr;
 }

@@ -73,7 +73,8 @@ namespace Potato{
             void SetTextSpeed(Uint32 ts);
             void SetFont(std::string f);
 
-            void End(std::vector<std::string> t, Potato::BgType b);
+            void StartScreen();
+            void End(std::vector<std::string> t, std::variant<std::string, std::tuple<int, int, int>> b);
         
 
         Engine(std::string Name, std::string WindowIcon=""): 
@@ -257,7 +258,7 @@ namespace Potato{
 
     void Engine::Step(int Inc){
         if (!this->StoryIndex.has_value()) return;
-        this->StoryIndex.value() +=Inc;
+        this->StoryIndex.value() += Inc;
     }
     void Engine::Jump(int Dest){
         this->StoryIndex = Dest;
@@ -281,7 +282,12 @@ namespace Potato{
     }
 
     // engine start and end
-    void Engine::End(std::vector<std::string> Texts, BgType Background=std::make_tuple(0,0,0)){
+    void Engine::StartScreen(){
+        this->EndScreen.Visible = true;
+        this->EndScreen.Background = std::make_tuple(0,0,0);
+    }
+
+    void Engine::End(std::vector<std::string> Texts, std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
         if (std::holds_alternative<std::string>(Background))
             this->Scene.SetBackgroundImage(std::get<std::string>(Background));
         else
@@ -289,6 +295,19 @@ namespace Potato{
 
         for (auto e: this->EndUI) e->Visible = true;
         this->EndScreen.Background = Background;
+
+        Threading::RunAsync(
+            [&, Texts](){
+                for (std::string Text:Texts){
+                    CurrentEngine->EndText.TextContent = "";
+                    for (char c : Text) {
+                        CurrentEngine->EndText.TextContent+=c;
+                        Threading::Delay(CurrentEngine->TextSpeed);
+                    }
+                    Threading::Delay(3000);
+                }
+            }
+        );
     }
 }
 

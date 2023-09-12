@@ -8,7 +8,7 @@ namespace Potato{
         
         float Opacity = 1;
         
-        std::optional<Potato::BgType> Background = 
+        std::optional<std::variant<std::string, std::tuple<int, int, int>>> Background = 
                 std::make_tuple(System::DefaultSettings["BGR"], System::DefaultSettings["BGG"], System::DefaultSettings["BGB"]);
         std::tuple<int, int, int> 
             TextColor = std::make_tuple(System::DefaultSettings["TCR"], System::DefaultSettings["TCG"], System::DefaultSettings["TCB"]);
