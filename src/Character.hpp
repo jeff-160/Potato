@@ -24,7 +24,7 @@ namespace Potato{
         Character(std::string Name, 
                 int X, int Y, 
                 int Width, int Height, 
-                std::vector<std::string> Images, int FrameRate=System::DefaultSettings["FrameRate"]): 
+                std::vector<std::string> Images, int FrameRate=System::DefaultSettings["CharacterFrameRate"]): 
             Name(Name), X(X), Y(Y), Width(Width), Height(Height), Images(Images), FrameRate(FrameRate){}
     };
 

@@ -31,7 +31,7 @@
     "DBYMargin": 10,
     "NBXMargin": 20,
 
-    "FrameRate": 10,
+    "CharacterFrameRate": 10,
 
     "CharacterFadeRate": 20,
     "CharacterFadeSpeed": 0.05,
