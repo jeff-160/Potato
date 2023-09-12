@@ -33,13 +33,13 @@ namespace Potato{
 #include "src/Threading.hpp"
 #include "src/Character.hpp"
 #include "src/UI.hpp"
+#include "src/Choice.hpp"
 #include "src/Scene.hpp"
 #include "src/Engine.hpp"
 #include "src/Effects.hpp"
 #include "src/Transitions.hpp"
 #include "src/PostFD.hpp"
 #include "src/Audio.hpp"
-#include "src/Choices.hpp"
 
 // fucky wucky main signature replace
 #define main() main(int argc, char* argv[])
