@@ -5,6 +5,7 @@ namespace Potato{
             int StoryIndex;
             std::variant<std::string, std::tuple<int, int, int>> Background;
             std::tuple<int, int, int> FontColor;
+            int FontSize;
 
         Choice(
             std::string Text, 
@@ -18,7 +19,8 @@ namespace Potato{
                 System::DefaultSettings["TCR"],
                 System::DefaultSettings["TCG"],
                 System::DefaultSettings["TCB"],
-            }
-        ): Text(Text), StoryIndex(StoryIndex), Background(Background), FontColor(FontColor){};
+            },
+            int FontSize=System::DefaultSettings["ChoiceFontSize"]
+        ): Text(Text), StoryIndex(StoryIndex), Background(Background), FontColor(FontColor), FontSize(FontSize){};
     };
 }

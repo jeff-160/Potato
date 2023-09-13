@@ -47,5 +47,7 @@
     "EndScreenFontSize": 10,
 
     "StartButtonWidth": 7,
-    "StartButtonHeight": 10 
+    "StartButtonHeight": 10,
+
+    "ChoiceFontSize": 20
 }

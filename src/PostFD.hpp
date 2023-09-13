@@ -101,6 +101,7 @@ namespace Potato{
             ChoiceBox.TextContent = Choice.Text;
             ChoiceBox.TextAlignMode = 1;
             ChoiceBox.TextColor = Choice.FontColor;
+            ChoiceBox.FontSize = Choice.FontSize;
 
             if (std::holds_alternative<std::string>(Choice.Background))
                 ChoiceBox.Background = std::get<std::string>(Choice.Background);
