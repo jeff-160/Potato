@@ -76,7 +76,7 @@ namespace Potato{
             void SetTextSpeed(Uint32 ts);
             void SetFont(std::string f);
 
-            void SetStartScreen(std::string t, std::variant<std::string, std::tuple<int, int, int>> b);
+            void SetTitleScreen(std::string t, int f, std::variant<std::string, std::tuple<int, int, int>> b);
             void DisplayStartScreen();
             void End(std::vector<std::string> t, std::variant<std::string, std::tuple<int, int, int>> b);
         
@@ -305,8 +305,12 @@ namespace Potato{
     }
 
     // engine start and end
-    void Engine::SetStartScreen(std::string Title, std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
+    void Engine::SetTitleScreen(
+        std::string Title, 
+        int FontSize=System::DefaultSettings["StartScreenFontSize"],
+        std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
         this->StartScreen = std::make_pair(Title, Background);
+        this->EndText.FontSize = FontSize;
     }
     void Engine::DisplayStartScreen(){
         for (auto u:this->UIElements) u->Visible = false;
@@ -315,7 +319,6 @@ namespace Potato{
 
         this->EndText.TextAlignMode = 1;
         this->EndText.TextContent = this->StartScreen.first;
-        this->EndText.FontSize = this->EndText.Height/System::DefaultSettings["StartScreenFontSize"];
     }
 
     void Engine::End(std::vector<std::string> Texts, std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
