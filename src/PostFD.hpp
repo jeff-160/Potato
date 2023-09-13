@@ -39,15 +39,15 @@ namespace Potato{
         if (TextFont==nullptr)
             return System::Error("Failed to load font: " + FontSrc);
         
-        SDL_Surface* TextSurface = TTF_RenderText_Blended_Wrapped(TextFont, this->TextContent.c_str(), Color, this->Width-this->Margin);
-        SDL_Rect TBounds = {this->X+this->Margin, this->Y+this->Margin, TextSurface->w, TextSurface->h};
+        SDL_Surface* TextSurface = TTF_RenderText_Blended_Wrapped(TextFont, this->TextContent.c_str(), Color, this->Width-this->Margin*2);
+        SDL_FRect TBounds = {this->X+this->Margin, this->Y+this->Margin, TextSurface->w, TextSurface->h};
         SDL_Texture* TextTexture = SDL_CreateTextureFromSurface(CurrentEngine->Renderer, TextSurface);
 
         // center alignment
         if (this->TextAlignMode==1)
             TBounds.x = this->X+(this->Width-TextSurface->w)/2;
         
-        SDL_RenderCopy(CurrentEngine->Renderer, TextTexture, nullptr, &TBounds);
+        SDL_RenderCopyF(CurrentEngine->Renderer, TextTexture, nullptr, &TBounds);
 
         SDL_FreeSurface(TextSurface);
         SDL_DestroyTexture(TextTexture);

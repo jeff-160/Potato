@@ -305,7 +305,7 @@ namespace Potato{
     }
 
     // engine start and end
-    void Engine::SetStartScreen(std::string Title, std::variant<std::string, std::tuple<int, int, int>> Background){
+    void Engine::SetStartScreen(std::string Title, std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
         this->StartScreen = std::make_pair(Title, Background);
     }
     void Engine::DisplayStartScreen(){
