@@ -153,10 +153,10 @@ namespace Potato{
         CurrentEngine = this;
 
         ShowWindow(GetConsoleWindow(), SW_HIDE);
-
         SDL_Event event;
+
         this->DisplayStartScreen();
-        // this->RunStory();
+
         while (1){
             this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){

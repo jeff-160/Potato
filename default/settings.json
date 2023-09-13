@@ -41,5 +41,11 @@
     "TransitionRate": 30,
     "TransitionFadeInOutSpeed": 0.05,
     "TransitionPopSpeed": 0.05,
-    "TransitionSlideSpeed": 20
+    "TransitionSlideSpeed": 20,
+
+    "StartScreenFontSize": 5,
+    "EndScreenFontSize": 10,
+
+    "StartButtonWidth": 7,
+    "StartButtonHeight": 10 
 }

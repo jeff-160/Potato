@@ -43,12 +43,9 @@ namespace Potato{
         SDL_Rect TBounds = {this->X+this->Margin, this->Y+this->Margin, TextSurface->w, TextSurface->h};
         SDL_Texture* TextTexture = SDL_CreateTextureFromSurface(CurrentEngine->Renderer, TextSurface);
 
-        int w, h;
-        TTF_SizeText(TextFont, this->TextContent.c_str(), &w, &h);
-        
         // center alignment
         if (this->TextAlignMode==1)
-            TBounds.x = this->X+(this->Width-w)/2;
+            TBounds.x = this->X+(this->Width-TextSurface->w)/2;
         
         SDL_RenderCopy(CurrentEngine->Renderer, TextTexture, nullptr, &TBounds);
 
