@@ -1,3 +1,7 @@
+// O------------------------------------------------------------------------------O
+// | if you steal any of this code without crediting youre a nigger               |
+// O------------------------------------------------------------------------------O
+
 #pragma once
 
 #ifndef POTATO_HEADERS
@@ -27,6 +31,13 @@
 namespace Potato{
     class Engine;
     Engine* CurrentEngine = nullptr;
+
+    void Init(){
+        TTF_Init();
+        SDL_Init(SDL_INIT_VIDEO);
+        SDL_Init(SDL_INIT_AUDIO);
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+    }
 }
 
 #include "src/System.hpp"

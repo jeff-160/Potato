@@ -84,13 +84,6 @@ namespace Potato{
         Engine(std::string Name, std::string WindowIcon=""): 
         Name(Name), UI(this->ScreenWidth, this->ScreenHeight), 
         EndScreen(0,0,0,0), EndMask(0,0,0,0), EndText(0,0,0,0), StartButton(0,0,0,0){
-            if (
-                TTF_Init()<0 || 
-                SDL_Init(SDL_INIT_VIDEO)<0 || 
-                SDL_Init(SDL_INIT_AUDIO)<0 ||
-                Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0
-            ) System::Error("Failed to create engine");
-
             this->Window = SDL_CreateWindow(
                                         this->Name.c_str(), 
                                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
