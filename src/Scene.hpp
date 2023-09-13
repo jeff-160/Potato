@@ -13,6 +13,7 @@ namespace Potato{
             std::function<void()> Transition = [](){};
             std::vector<UIElement> ChoiceBoxes;
 
+            void SetBackground(std::variant<std::string, std::tuple<int, int, int>> b);
             void RenderBackground();
 
         public:
@@ -31,6 +32,13 @@ namespace Potato{
 
             void Choice(std::vector<Choice> c);
     };
+
+    void SceneCreator::SetBackground(std::variant<std::string, std::tuple<int, int, int>> Background){
+        if (std::holds_alternative<std::string>(Background))
+            this->SetBackgroundImage(std::get<std::string>(Background));
+        else
+            this->SetBackgroundColor(std::get<std::tuple<int, int, int>>(Background));
+    }
 
     // scene modifications
     void SceneCreator::SetBackgroundColor(std::tuple<int, int, int> Color){

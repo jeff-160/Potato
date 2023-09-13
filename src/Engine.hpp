@@ -27,6 +27,8 @@ namespace Potato{
             std::optional<int> StoryIndex = std::nullopt;
             std::map<int, std::function<void()>> Story;
 
+            std::pair<std::string, std::variant<std::string, std::tuple<int, int, int>>> StartScreen = 
+                std::make_pair("", std::make_tuple(0,0,0));
             UIElement EndScreen, EndMask, EndText;
             std::vector<UIElement*> EndUI;
 
@@ -73,7 +75,8 @@ namespace Potato{
             void SetTextSpeed(Uint32 ts);
             void SetFont(std::string f);
 
-            void StartScreen();
+            void SetStartScreen(std::string t, std::variant<std::string, std::tuple<int, int, int>> b);
+            void DisplayStartScreen();
             void End(std::vector<std::string> t, std::variant<std::string, std::tuple<int, int, int>> b);
         
 
@@ -107,7 +110,7 @@ namespace Potato{
             this->EndMask.Opacity = 0.5; this->EndMask.Background = std::make_tuple(0,0,0);
             this->EndText.Width = this->ScreenWidth*0.7, this->EndText.Height = this->ScreenHeight*0.7;
             this->EndText.Background = std::nullopt;
-            this->EndText.TextColor = {255, 255, 255}; this->EndText.FontSize = this->EndText.Height/10;
+            this->EndText.TextColor = {255, 255, 255};
             this->EndText.X = static_cast<int>((this->ScreenWidth-this->EndText.Width)/2);
             this->EndText.Y = static_cast<int>((this->ScreenHeight-this->EndText.Height)/2);
             this->EndUI = {&this->EndScreen, &this->EndMask, &this->EndText};
@@ -134,7 +137,7 @@ namespace Potato{
         ShowWindow(GetConsoleWindow(), SW_HIDE);
 
         SDL_Event event;
-
+        // this->DisplayStartScreen();
         this->RunStory();
         while (1){
             this->FrameStart = SDL_GetTicks();
@@ -152,6 +155,7 @@ namespace Potato{
     }
 
     void Engine::CheckUIClick(int MouseX, int MouseY){
+        if (this->EndScreen.Visible || this->UI.TransitionScreen.Visible) return;
         std::vector<UIElement> elems = this->Scene.ChoiceBoxes;
         for (auto e:this->UIElements) elems.push_back(*e);
         for (auto elem: elems){
@@ -282,19 +286,26 @@ namespace Potato{
     }
 
     // engine start and end
-    void Engine::StartScreen(){
-        this->EndScreen.Visible = true;
-        this->EndScreen.Background = std::make_tuple(0,0,0);
+    void Engine::SetStartScreen(std::string Title, std::variant<std::string, std::tuple<int, int, int>> Background){
+        this->StartScreen = std::make_pair(Title, Background);
+    }
+    void Engine::DisplayStartScreen(){
+        for (auto u:this->UIElements) u->Visible = false;
+        for (auto e:this->EndUI) e->Visible = true;
+        this->EndScreen.Background = this->StartScreen.second;
+
+        this->EndText.TextAlignMode = 1;
+        this->EndText.TextContent = this->StartScreen.first;
+        this->EndText.FontSize = this->EndText.Height/System::DefaultSettings["StartScreenFontSize"];
     }
 
     void Engine::End(std::vector<std::string> Texts, std::variant<std::string, std::tuple<int, int, int>> Background=std::make_tuple(0,0,0)){
-        if (std::holds_alternative<std::string>(Background))
-            this->Scene.SetBackgroundImage(std::get<std::string>(Background));
-        else
-            this->Scene.SetBackgroundColor(std::get<std::tuple<int, int, int>>(Background));
+        this->Scene.SetBackground(Background);
 
         for (auto e: this->EndUI) e->Visible = true;
         this->EndScreen.Background = Background;
+        this->EndText.TextAlignMode = 0;
+        this->EndText.FontSize = this->EndText.Height/System::DefaultSettings["EndScreenFontSize"];
 
         Threading::RunAsync(
             [&, Texts](){
