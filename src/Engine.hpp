@@ -29,6 +29,7 @@ namespace Potato{
 
             std::pair<std::string, std::variant<std::string, std::tuple<int, int, int>>> StartScreen = 
                 std::make_pair("", std::make_tuple(0,0,0));
+            UIElement StartButton;
             UIElement EndScreen, EndMask, EndText;
             std::vector<UIElement*> EndUI;
 
@@ -81,7 +82,8 @@ namespace Potato{
         
 
         Engine(std::string Name, std::string WindowIcon=""): 
-        Name(Name), UI(this->ScreenWidth, this->ScreenHeight), EndScreen(0,0,0,0), EndMask(0,0,0,0), EndText(0,0,0,0){
+        Name(Name), UI(this->ScreenWidth, this->ScreenHeight), 
+        EndScreen(0,0,0,0), EndMask(0,0,0,0), EndText(0,0,0,0), StartButton(0,0,0,0){
             if (
                 TTF_Init()<0 || 
                 SDL_Init(SDL_INIT_VIDEO)<0 || 
@@ -119,6 +121,22 @@ namespace Potato{
                 e->OutlineThickness = 0;
             }
 
+            this->StartButton.Width = this->ScreenWidth/System::DefaultSettings["StartButtonWidth"];
+            this->StartButton.Height = this->ScreenHeight/System::DefaultSettings["StartButtonHeight"];
+            this->StartButton.Background = std::make_tuple(237, 231, 225);
+            this->StartButton.TextContent = "Start"; 
+            this->StartButton.FontSize = this->StartButton.Height/2; 
+            this->StartButton.TextAlignMode = 1;
+            this->StartButton.X = static_cast<int>((this->ScreenWidth-this->StartButton.Width)/2);
+            this->StartButton.Y = static_cast<int>((this->ScreenHeight-this->StartButton.Height)/2);
+            this->StartButton.Callback = [&, this](){
+                for (auto e:this->EndUI) e->Visible = false;
+                this->EndUI.pop_back();
+                this->StartButton.Visible = false;
+                this->RunStory();
+            };
+            this->EndUI.push_back(&this->StartButton);
+
             if (WindowIcon=="") return;
             SDL_Surface* Icon = IMG_Load(WindowIcon.c_str());
             if (Icon==nullptr){
@@ -137,8 +155,8 @@ namespace Potato{
         ShowWindow(GetConsoleWindow(), SW_HIDE);
 
         SDL_Event event;
-        // this->DisplayStartScreen();
-        this->RunStory();
+        this->DisplayStartScreen();
+        // this->RunStory();
         while (1){
             this->FrameStart = SDL_GetTicks();
             while (SDL_PollEvent(&event)){
@@ -155,11 +173,12 @@ namespace Potato{
     }
 
     void Engine::CheckUIClick(int MouseX, int MouseY){
-        if (this->EndScreen.Visible || this->UI.TransitionScreen.Visible) return;
         std::vector<UIElement> elems = this->Scene.ChoiceBoxes;
         for (auto e:this->UIElements) elems.push_back(*e);
+        elems.push_back(this->StartButton);
         for (auto elem: elems){
             if (
+                elem.Visible &&
                 MouseX>=elem.X &&
                 MouseX<=elem.X+elem.Width &&
                 MouseY>=elem.Y &&
