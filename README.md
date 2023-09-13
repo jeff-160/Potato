@@ -20,8 +20,8 @@ Check out the [Shrek dating simulator](https://github.com/WAP-Industries/Potato-
 ## Project setup
 To create a new Potato project:
 1. Clone and rename the folder if needed
-2. Run the build.bat file located in the root directory
-3. Enter a project name when prompted, and a compile.ps1 and .cpp file will be generated  
+2. Run the `build.bat` file located in the root directory
+3. Enter a project name when prompted, and a `compile.ps1` and `.cpp` file will be generated  
   
 A complete Potato project folder will be structured as such (excluding all non-essential files).
 ```
