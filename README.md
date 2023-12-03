@@ -13,8 +13,7 @@ Check out the [Shrek dating simulator](https://github.com/WAP-Industries/Potato-
 
 ## Requirements
 1. GNU g++ (update to the latest version)
-2. Python 3.11 or higher (idk as long as it has the json module)
-3. The blood of an infant
+2. The blood of an infant
 ---
 
 ## Project setup
