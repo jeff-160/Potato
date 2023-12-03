@@ -1,6 +1,6 @@
-import json, os
+import json, os, sys
 
-dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dir = os.path.dirname(os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))) 
 path = f"{dir}\default\settings.json"
 
 def ParseSettings():
