@@ -20,7 +20,7 @@ namespace Potato{
     };
 
     std::map<std::string, double> System::GetDefaults(){
-        auto ParseData = [](std::string Data)->std::map<std::string, double>{
+        auto ParseData = [](std::string Data)->std::map<std::string, double> {
             std::map<std::string, double> PData;
             std::vector<std::string> Toks;
             std::istringstream Iss(Data);
@@ -32,7 +32,7 @@ namespace Potato{
             return PData;
         };
 
-        FILE* Pipe = popen("python src\\LoadDef.py", "r");
+        FILE* Pipe = popen("src\\LoadDef.exe", "r");
         
         char Buffer[128];
         std::string Output;
