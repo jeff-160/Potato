@@ -7,13 +7,10 @@ Potato is a simple visual novel framework written in C++ using the SDL framework
 Big thanks to [chen e](https://github.com/56cy) for helping with the SDL setup.  
 Extra thanks to [zhogrog](https://github.com/GaoZR2008) for christening this.  
 
-Check out the [Shrek dating simulator](https://github.com/WAP-Industries/Potato-Shrek-Dating-Sim) made using this framework.
-
 ---
 
 ## Requirements
 1. GNU g++ (update to the latest version)
-2. The blood of an infant
 ---
 
 ## Project setup
