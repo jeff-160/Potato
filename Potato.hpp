@@ -1,7 +1,3 @@
-// O------------------------------------------------------------------------------O
-// | if you steal any of this code without crediting youre a nigger               |
-// O------------------------------------------------------------------------------O
-
 #pragma once
 
 #ifndef POTATO_HEADERS
