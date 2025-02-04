@@ -48,7 +48,6 @@ namespace Potato{
 #include "src/PostFD.hpp"
 #include "src/Audio.hpp"
 
-// fucky wucky main signature replace
 #define main() main(int argc, char* argv[])
 
 #endif
